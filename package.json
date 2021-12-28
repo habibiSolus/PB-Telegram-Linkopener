@@ -1,0 +1,16 @@
+{
+  "name": "PB-Telegram-LinkOpener",
+  "version": "0.0.1",
+  "description": "Partsbot telegram opener by Oizopower",
+  "main": "app.js",
+  "bin": "app.js",
+  "author": "Oizopower",
+  "license": "MIT",
+  "dependencies": {
+    "figlet": "^1.5.2",
+    "input": "^1.0.1",
+    "open": "^8.4.0",
+    "telegram": "^2.1.0"
+  },
+  "repository": {}
+}
