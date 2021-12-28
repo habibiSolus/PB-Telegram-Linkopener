@@ -1,6 +1,9 @@
 # Partsbot Telegram Link Opener
 Open PB Telegram Links
 
+## Todo
+1. multiple profiles
+
 ## Installation
 
 ### Install NodeJS and NPM (Windows)
