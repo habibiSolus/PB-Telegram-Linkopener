@@ -9,7 +9,6 @@ const figlet = require("figlet");
 const open = require('open');
 const Config = require("./config.json");
 
-// Settings
 const apiId = Config.telegram.app_id;
 const apiHash = Config.telegram.app_hash;
 const storeSession = new StoreSession("telegram_session");
@@ -53,7 +52,19 @@ async function handleMessages(event)
         {
             if (titleUser.includes("Direct Buy") || titleUser.includes("PartsBot Amazon Alert"))
             {
-                buttonLink = message.replyMarkup.rows[0].buttons[Config.button.number].url;
+                if(Config.button.number == 2)
+                {
+                    try{
+                        buttonLink = message.replyMarkup.rows[0].buttons[Config.button.number].url;
+                    } catch (error) 
+                    {
+                        buttonLink = message.replyMarkup.rows[0].buttons[1].url;
+                    }
+                }
+                else
+                {
+                    buttonLink = message.replyMarkup.rows[0].buttons[Config.button.number].url;
+                }
     
                 if(buttonLink)
                 {
@@ -105,3 +116,13 @@ async function handleMessages(event)
         console.log(error);
     }
 }
+
+/**
+* Change console log with date time
+*/
+console.logCopy = console.log.bind(console);
+console.log = function(data)
+{
+    var timestamp = '[' + new Date().toLocaleString() + '] ';
+    this.logCopy(timestamp, data);
+};
