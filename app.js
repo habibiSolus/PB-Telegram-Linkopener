@@ -15,12 +15,11 @@ const storeSession = new StoreSession("telegram_session");
 
 (async () => {
     
-    await figlet('Oizopower', function(err, data) {
+    figlet('Oizopower', function(err, data) {
         console.log(data);
         console.log("\n======================================================\n\n Partsbot - Platinum Telegram Link Opener.\n\n Donate: https://www.Ko-fi.com/oizopower\n\n======================================================");
         console.log("+ Bezig met opstarten");
     });
-
     
     const client = new TelegramClient(storeSession, apiId, apiHash, 
     {
@@ -79,7 +78,7 @@ async function handleMessages(event)
                     let lines = messageText.split('\n');
                     let productName = lines[lines.length - 1].replace("**","");
     
-                    let MessageConsole = "Product gevonden: " + productName + " - Model: " + productModel + " - Prijs: " + productPrice;
+                    let MessageConsole = "Product: " + productName + " - Model: " + productModel + " - Prijs: " + productPrice + " (Filter: " + Config.filters[productModel]['max'] + ")";
                     
                     if( productPrice <= Config.filters[productModel]['max'] )
                     {
@@ -102,7 +101,7 @@ async function handleMessages(event)
                         MessageConsole += " - Prijs filter: Denied";
                     }
                     
-                    console.log(MessageConsole);
+                    console.log("[" + new Date().toLocaleString() + "] " + MessageConsole);
                 }
                 else
                 {
@@ -116,13 +115,3 @@ async function handleMessages(event)
         console.log(error);
     }
 }
-
-/**
-* Change console log with date time
-*/
-console.logCopy = console.log.bind(console);
-console.log = function(data)
-{
-    var timestamp = '[' + new Date().toLocaleString() + '] ';
-    this.logCopy(timestamp, data);
-};
