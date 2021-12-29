@@ -7,7 +7,13 @@ const { Message } = require('telegram/tl/custom/message');
 const input = require("input");
 const figlet = require("figlet");
 const open = require('open');
-const Config = require("./config.json");
+const path = require('path');
+const fs = require('fs');
+//const Config = require("./config.json");
+
+const configPath = path.join(process.cwd(), './config.json');
+const ConfigData = fs.readFileSync(configPath);
+const Config = JSON.parse(ConfigData);
 
 const apiId = Config.telegram.app_id;
 const apiHash = Config.telegram.app_hash;

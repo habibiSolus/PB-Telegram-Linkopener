@@ -4,12 +4,21 @@
   "description": "Partsbot telegram opener by Oizopower",
   "main": "app.js",
   "bin": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "author": "Oizopower",
   "license": "MIT",
+  "pkg": {
+    "output": "dist"
+  },
   "dependencies": {
     "figlet": "^1.5.2",
+    "fs": "0.0.1-security",
     "input": "^1.0.1",
     "open": "^8.4.0",
+    "path": "^0.12.7",
     "telegram": "^2.1.0"
   },
   "repository": {}
