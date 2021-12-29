@@ -13,7 +13,10 @@ https://nodejs.org/dist/v16.13.1/node-v16.13.1-x64.msi
 curl -sL https://deb.nodesource.com/setup_16.x | sudo bash -  
 sudo apt-get install -y nodejs  
   
-### Install the package  
+### Download prebuilt 
+[a link](https://github.com/Oizopower/PB-Telegram-Linkopener/releases)
+
+### Install from source
 cd ~ && git clone https://github.com/Oizopower/PB-Telegram-Linkopener && cd PB-Telegram-Linkopener  
 npm install  
 edit config.json to your settings (skip profiles, not yet finished. Should be using default browser now)  
