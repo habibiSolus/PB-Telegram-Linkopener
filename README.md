@@ -20,6 +20,11 @@ npm install
 edit config.json to your settings  
 add app_id and app_hash from https://my.telegram.org/apps 
 
+Starten met 
+```
+node app.js
+```
+
 ```
 {
   "telegram": {
