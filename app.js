@@ -43,6 +43,7 @@ const storeSession = new StoreSession("telegram_session");
     });
     
     console.log("+ Wheeee! we zijn verbonden.");
+    console.log("=============================================================================================================================="); 
     
     client.addEventHandler(handleMessages, new NewMessage({}));
 })();
@@ -54,34 +55,9 @@ async function handleMessages(event)
     
     const colours = {
         reset: "\x1b[0m",
-        bright: "\x1b[1m",
-        dim: "\x1b[2m",
-        underscore: "\x1b[4m",
-        blink: "\x1b[5m",
-        reverse: "\x1b[7m",
-        hidden: "\x1b[8m",
-        
         fg: {
-            black: "\x1b[30m",
             red: "\x1b[31m",
             green: "\x1b[32m",
-            yellow: "\x1b[33m",
-            blue: "\x1b[34m",
-            magenta: "\x1b[35m",
-            cyan: "\x1b[36m",
-            white: "\x1b[37m",
-            crimson: "\x1b[38m" // Scarlet
-        },
-        bg: {
-            black: "\x1b[40m",
-            red: "\x1b[41m",
-            green: "\x1b[42m",
-            yellow: "\x1b[43m",
-            blue: "\x1b[44m",
-            magenta: "\x1b[45m",
-            cyan: "\x1b[46m",
-            white: "\x1b[47m",
-            crimson: "\x1b[48m"
         }
     };
 
@@ -122,42 +98,52 @@ async function handleMessages(event)
                     let lines = messageText.split('\n');
                     let productName = lines[lines.length - 1].replace("**","");
 
-                    if( productPrice <= Config.filters[productModel][amazonCountry]['maxprice'] && Config.filters[productModel][amazonCountry]['enabled'] )
+                    if (Config.filters.hasOwnProperty(productModel)) 
                     {
-                        filterStatus = true;
-                        if(amazonWareHouse)
+                        if (Config.filters[productModel].hasOwnProperty(amazonCountry))
                         {
-                            if(Config.filters[productModel][amazonCountry]['useWarehouse'])
+                            if( productPrice <= Config.filters[productModel][amazonCountry]['maxprice'] && Config.filters[productModel][amazonCountry]['enabled'] )
                             {
-                                open(buttonLink);
-                            }
-                            else
-                            {
-                                filterStatus = false;
-                            }
+                                filterStatus = true;
+                                if(amazonWareHouse)
+                                {
+                                    if(Config.filters[productModel][amazonCountry]['useWarehouse'])
+                                    {
+                                        open(buttonLink);
+                                    }
+                                    else
+                                    {
+                                        filterStatus = false;
+                                    }
+                                }
+                                else
+                                {
+                                    open(buttonLink);
+                                }
+                            } 
                         }
-                        else
-                        {
-                            open(buttonLink);
-                        }
-                    } 
+                    }
 
                     let colourConsole = filterStatus ? colours.fg.green : colours.fg.red;
 
-                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " =============================================================================================================================="); 
                     console.log(colourConsole, "[" + dateTime + "] " + colours.reset + productName);
                     console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Model: " + productModel);
                     console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Prijs: " + productPrice);
                     console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Country: " + amazonCountry);
-                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " WHD Status: " + (amazonWareHouse ? "Yes" : "No"));
+                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Is WHD: " + (amazonWareHouse ? "Yes" : "No"));
                     console.log(colourConsole, "[" + dateTime + "] ", colours.reset);
-                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Filters", colours.reset);
-                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Enabled: " + (Config.filters[productModel][amazonCountry]['enabled'] ? "Yes" : "No"));
-                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Max Prijs: " + Config.filters[productModel][amazonCountry]['maxprice']);
-                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " WHD accepted: " + (Config.filters[productModel][amazonCountry]['useWarehouse'] ? "Yes" : "No"));
-                    console.log(colourConsole, "[" + dateTime + "] ", colours.reset);
+
+                    if (Config.filters.hasOwnProperty(productModel) && Config.filters[productModel].hasOwnProperty(amazonCountry))
+                    {
+                        console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Filters", colours.reset);
+                        console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Enabled: " + (Config.filters[productModel][amazonCountry]['enabled'] ? "Yes" : "No"));
+                        console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Max Prijs: " + Config.filters[productModel][amazonCountry]['maxprice']);
+                        console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " WHD accepted: " + (Config.filters[productModel][amazonCountry]['useWarehouse'] ? "Yes" : "No"));
+                        console.log(colourConsole, "[" + dateTime + "] ", colours.reset);
+                    }
+
                     console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Filter Status: " + (filterStatus ? "Accepted" : "Denied"));
-                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " =============================================================================================================================="); 
+                    console.log("=============================================================================================================================="); 
                 }
                 else
                 {
