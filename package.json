@@ -18,6 +18,7 @@
     ]
   },
   "dependencies": {
+    "Console": "^1.1.0",
     "figlet": "^1.5.2",
     "fs": "0.0.1-security",
     "input": "^1.0.1",

@@ -10,7 +10,6 @@ const open = require('open');
 const path = require('path');
 const fs = require('fs');
 const { Console } = require("console");
-//const Config = require("./config.json");
 
 const configPath = path.join(process.cwd(), './config.json');
 const ConfigData = fs.readFileSync(configPath);
@@ -23,7 +22,7 @@ const storeSession = new StoreSession("telegram_session");
 
 
 (async () => {
-    
+
     figlet('Oizopower', function(err, data) {
         console.log(data);
         console.log("\n======================================================\n\n Partsbot - Platinum Telegram Link Opener.\n\n Donate: https://www.Ko-fi.com/oizopower\n\n======================================================");
@@ -125,13 +124,16 @@ async function handleMessages(event)
 
                     if( productPrice <= Config.filters[productModel][amazonCountry]['maxprice'] && Config.filters[productModel][amazonCountry]['enabled'] )
                     {
-
                         filterStatus = true;
                         if(amazonWareHouse)
                         {
                             if(Config.filters[productModel][amazonCountry]['useWarehouse'])
                             {
                                 open(buttonLink);
+                            }
+                            else
+                            {
+                                filterStatus = false;
                             }
                         }
                         else
@@ -142,20 +144,20 @@ async function handleMessages(event)
 
                     let colourConsole = filterStatus ? colours.fg.green : colours.fg.red;
 
-                    console.log(colourConsole, "[" + dateTime + "] ==============================================================================================================================", colours.reset); 
-                    console.log(colourConsole, "[" + dateTime + "] " + productName, colours.reset);
-                    console.log(colourConsole, "[" + dateTime + "] Model: " + productModel, colours.reset);
-                    console.log(colourConsole, "[" + dateTime + "] Prijs: " + productPrice, colours.reset);
-                    console.log(colourConsole, "[" + dateTime + "] Country: " + amazonCountry, colours.reset);
-                    console.log(colourConsole, "[" + dateTime + "] WHD Status: " + (amazonWareHouse ? "Yes" : "No"), colours.reset);
+                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " =============================================================================================================================="); 
+                    console.log(colourConsole, "[" + dateTime + "] " + colours.reset + productName);
+                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Model: " + productModel);
+                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Prijs: " + productPrice);
+                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Country: " + amazonCountry);
+                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " WHD Status: " + (amazonWareHouse ? "Yes" : "No"));
                     console.log(colourConsole, "[" + dateTime + "] ", colours.reset);
-                    console.log(colourConsole, "[" + dateTime + "] Filters", colours.reset);
-                    console.log(colourConsole, "[" + dateTime + "] Enabled: " + (Config.filters[productModel][amazonCountry]['enabled'] ? "Yes" : "No"), colours.reset);
-                    console.log(colourConsole, "[" + dateTime + "] Max Prijs: " + Config.filters[productModel][amazonCountry]['maxprice'], colours.reset);
-                    console.log(colourConsole, "[" + dateTime + "] WHD accepted: " + (Config.filters[productModel][amazonCountry]['useWarehouse'] ? "Yes" : "No"), colours.reset);
+                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Filters", colours.reset);
+                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Enabled: " + (Config.filters[productModel][amazonCountry]['enabled'] ? "Yes" : "No"));
+                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Max Prijs: " + Config.filters[productModel][amazonCountry]['maxprice']);
+                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " WHD accepted: " + (Config.filters[productModel][amazonCountry]['useWarehouse'] ? "Yes" : "No"));
                     console.log(colourConsole, "[" + dateTime + "] ", colours.reset);
-                    console.log(colourConsole, "[" + dateTime + "] Filter Status: " + (filterStatus ? "Accepted" : "Denied"), colours.reset);
-                    console.log(colourConsole, "[" + dateTime + "] ==============================================================================================================================", colours.reset); 
+                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Filter Status: " + (filterStatus ? "Accepted" : "Denied"));
+                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " =============================================================================================================================="); 
                 }
                 else
                 {
