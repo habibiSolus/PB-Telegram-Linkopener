@@ -3,6 +3,7 @@ Open PB Telegram Links
 
 ## Todo
 1. multiple profiles
+2. option for WHD, true/false
 
 ## Installation
 
