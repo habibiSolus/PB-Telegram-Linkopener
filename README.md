@@ -16,7 +16,7 @@ sudo apt-get install -y nodejs
 ### Install the package  
 cd ~ && git clone https://github.com/Oizopower/PB-Telegram-Linkopener && cd PB-Telegram-Linkopener  
 npm install  
-edit config.json to your settings  
+edit config.json to your settings (skip profiles, not yet finished. Should be using default browser now)  
 add app_id and app_hash from https://my.telegram.org/apps 
 
 Starten met 
