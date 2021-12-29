@@ -2,7 +2,7 @@
 Open PB Telegram Links
 
 ## Todo
-1. multiple profiles   
+1. multiple profiles (skip profiles in config.json, those are not working yet)   
 
 ## Installation
 
