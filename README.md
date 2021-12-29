@@ -33,7 +33,7 @@ add app_id and app_hash from https://my.telegram.org/apps
     }
   },
   "button": {
-    "number": 2
+    "number": 1
   },
   "filters": {
     "PS5": {
