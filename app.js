@@ -64,7 +64,6 @@ async function handleMessages(event)
                     let productPriceTemp = productPriceReg.replace(/[^0-9+-]/g, '');
                     let productPrice = parseFloat(productPriceTemp/100);
                     let amazonWareHouse = (productSoldBy.includes("Warehouse")) ? true : false;
-                    
 
                     let lines = messageText.split('\n');
                     let productName = lines[lines.length - 1].replace("**","");
@@ -73,7 +72,7 @@ async function handleMessages(event)
                     
                     if( productPrice <= Config.filters[productModel]['max'] )
                     {
-                        MessageConsole += " - Prijs filter: Accepted";
+                        MessageConsole += " - Prijs filter: Accepted - WHD status: " + Config.useWHD;
 
                         if(amazonWareHouse)
                         {
