@@ -4,6 +4,9 @@ Open PB Telegram Links
 ## Todo
 1. multiple profiles (skip profiles in config.json, those are not working yet)   
 
+### Download prebuild  
+[Download latest prebuild](https://github.com/Oizopower/PB-Telegram-Linkopener/releases)
+
 ## Installation
 
 ### Install NodeJS and NPM (Windows)
@@ -13,9 +16,6 @@ https://nodejs.org/dist/v16.13.1/node-v16.13.1-x64.msi
 curl -sL https://deb.nodesource.com/setup_16.x | sudo bash -  
 sudo apt-get install -y nodejs  
   
-### Download prebuilt 
-[a link](https://github.com/Oizopower/PB-Telegram-Linkopener/releases)
-
 ### Install from source
 cd ~ && git clone https://github.com/Oizopower/PB-Telegram-Linkopener && cd PB-Telegram-Linkopener  
 npm install  
