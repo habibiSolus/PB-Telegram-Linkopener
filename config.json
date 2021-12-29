@@ -1,8 +1,9 @@
 {
   "telegram": {
-     "app_id": "",
-     "app_hash": ""
+    "app_id": "",
+    "app_hash": ""
   },
+  "useWHD": false,
   "profiles": {
     "profile1": {
       "browser": "google chrome",

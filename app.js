@@ -59,25 +59,39 @@ async function handleMessages(event)
                 {
                     let messageText = message.text;
                     let productModel = messageText.match(/Model: (.*)/i)[1];
+                    let productSoldBy = messageText.match(/Sold by: (.*)/i)[1];
                     let productPriceReg = messageText.match(/Price: (.*)/i)[1];
                     let productPriceTemp = productPriceReg.replace(/[^0-9+-]/g, '');
                     let productPrice = parseFloat(productPriceTemp/100);
-    
+                    let amazonWareHouse = (productSoldBy.includes("Warehouse")) ? true : false;
+                    
+
                     let lines = messageText.split('\n');
                     let productName = lines[lines.length - 1].replace("**","");
     
                     let MessageConsole = "Product gevonden: " + productName + " - Model: " + productModel + " - Prijs: " + productPrice;
                     
-                    if( productPrice >= Config.filters[productModel]['min'] && productPrice <= Config.filters[productModel]['max'] )
+                    if( productPrice <= Config.filters[productModel]['max'] )
                     {
                         MessageConsole += " - Prijs filter: Accepted";
-                        open(buttonLink);
+
+                        if(amazonWareHouse)
+                        {
+                            if(Config.useWHD)
+                            {
+                                open(buttonLink);
+                            }
+                        }
+                        else
+                        {
+                            open(buttonLink);
+                        }
                     } 
                     else 
                     {
                         MessageConsole += " - Prijs filter: Denied";
                     }
-
+                    
                     console.log(MessageConsole);
                 }
                 else
