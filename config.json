@@ -134,6 +134,18 @@
         "useWarehouse": true
       }
     },
+    "3070ti": {
+      "EUR": {
+        "enabled": true,
+        "maxprice": 850,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": true,
+        "maxprice": 420,
+        "useWarehouse": true
+      }
+    },
     "3070ti_LHR": {
       "EUR": {
         "enabled": true,
