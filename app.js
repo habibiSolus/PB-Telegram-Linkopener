@@ -9,6 +9,7 @@ const figlet = require("figlet");
 const open = require('open');
 const path = require('path');
 const fs = require('fs');
+const { Console } = require("console");
 //const Config = require("./config.json");
 
 const configPath = path.join(process.cwd(), './config.json');
@@ -18,6 +19,8 @@ const Config = JSON.parse(ConfigData);
 const apiId = Config.telegram.app_id;
 const apiHash = Config.telegram.app_hash;
 const storeSession = new StoreSession("telegram_session");
+
+
 
 (async () => {
     
@@ -50,12 +53,45 @@ async function handleMessages(event)
     const message = event.message;
     const sender = await message.getSender();
     
+    const colours = {
+        reset: "\x1b[0m",
+        bright: "\x1b[1m",
+        dim: "\x1b[2m",
+        underscore: "\x1b[4m",
+        blink: "\x1b[5m",
+        reverse: "\x1b[7m",
+        hidden: "\x1b[8m",
+        
+        fg: {
+            black: "\x1b[30m",
+            red: "\x1b[31m",
+            green: "\x1b[32m",
+            yellow: "\x1b[33m",
+            blue: "\x1b[34m",
+            magenta: "\x1b[35m",
+            cyan: "\x1b[36m",
+            white: "\x1b[37m",
+            crimson: "\x1b[38m" // Scarlet
+        },
+        bg: {
+            black: "\x1b[40m",
+            red: "\x1b[41m",
+            green: "\x1b[42m",
+            yellow: "\x1b[43m",
+            blue: "\x1b[44m",
+            magenta: "\x1b[45m",
+            cyan: "\x1b[46m",
+            white: "\x1b[47m",
+            crimson: "\x1b[48m"
+        }
+    };
+
     try {
         let titleUser = sender.title;
-        
+
         if(titleUser !== undefined)
         {
-            if (titleUser.includes("Direct Buy") || titleUser.includes("PartsBot Amazon Alert"))
+            if (titleUser.includes("Direct Buy") || titleUser.includes("PartsBot Amazon Alert") || titleUser.includes("Announcements General"))
             {
                 if(Config.button.number == 2)
                 {
@@ -77,22 +113,23 @@ async function handleMessages(event)
                     let productModel = messageText.match(/Model: (.*)/i)[1];
                     let productSoldBy = messageText.match(/Sold by: (.*)/i)[1];
                     let productPriceReg = messageText.match(/Price: (.*)/i)[1];
+                    let amazonCountry = productPriceReg.includes("€") ? "EUR" : "UK";
                     let productPriceTemp = productPriceReg.replace(/[^0-9+-]/g, '');
                     let productPrice = parseFloat(productPriceTemp/100);
                     let amazonWareHouse = (productSoldBy.includes("Warehouse")) ? true : false;
+                    let filterStatus = false;
+                    let dateTime = new Date().toLocaleString();
 
                     let lines = messageText.split('\n');
                     let productName = lines[lines.length - 1].replace("**","");
-    
-                    let MessageConsole = "Product: " + productName + " - Model: " + productModel + " - Prijs: " + productPrice + " (Filter: " + Config.filters[productModel]['max'] + ")";
-                    
-                    if( productPrice <= Config.filters[productModel]['max'] )
-                    {
-                        MessageConsole += " - Prijs filter: Accepted - WHD status: " + Config.useWHD;
 
+                    if( productPrice <= Config.filters[productModel][amazonCountry]['maxprice'] && Config.filters[productModel][amazonCountry]['enabled'] )
+                    {
+
+                        filterStatus = true;
                         if(amazonWareHouse)
                         {
-                            if(Config.useWHD)
+                            if(Config.filters[productModel][amazonCountry]['useWarehouse'])
                             {
                                 open(buttonLink);
                             }
@@ -102,12 +139,23 @@ async function handleMessages(event)
                             open(buttonLink);
                         }
                     } 
-                    else 
-                    {
-                        MessageConsole += " - Prijs filter: Denied";
-                    }
-                    
-                    console.log("[" + new Date().toLocaleString() + "] " + MessageConsole);
+
+                    let colourConsole = filterStatus ? colours.fg.green : colours.fg.red;
+
+                    console.log(colourConsole, "[" + dateTime + "] ==============================================================================================================================", colours.reset); 
+                    console.log(colourConsole, "[" + dateTime + "] " + productName, colours.reset);
+                    console.log(colourConsole, "[" + dateTime + "] Model: " + productModel, colours.reset);
+                    console.log(colourConsole, "[" + dateTime + "] Prijs: " + productPrice, colours.reset);
+                    console.log(colourConsole, "[" + dateTime + "] Country: " + amazonCountry, colours.reset);
+                    console.log(colourConsole, "[" + dateTime + "] WHD Status: " + (amazonWareHouse ? "Yes" : "No"), colours.reset);
+                    console.log(colourConsole, "[" + dateTime + "] ", colours.reset);
+                    console.log(colourConsole, "[" + dateTime + "] Filters", colours.reset);
+                    console.log(colourConsole, "[" + dateTime + "] Enabled: " + (Config.filters[productModel][amazonCountry]['enabled'] ? "Yes" : "No"), colours.reset);
+                    console.log(colourConsole, "[" + dateTime + "] Max Prijs: " + Config.filters[productModel][amazonCountry]['maxprice'], colours.reset);
+                    console.log(colourConsole, "[" + dateTime + "] WHD accepted: " + (Config.filters[productModel][amazonCountry]['useWarehouse'] ? "Yes" : "No"), colours.reset);
+                    console.log(colourConsole, "[" + dateTime + "] ", colours.reset);
+                    console.log(colourConsole, "[" + dateTime + "] Filter Status: " + (filterStatus ? "Accepted" : "Denied"), colours.reset);
+                    console.log(colourConsole, "[" + dateTime + "] ==============================================================================================================================", colours.reset); 
                 }
                 else
                 {

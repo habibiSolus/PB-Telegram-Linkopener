@@ -27,63 +27,211 @@ node app.js
 ```
 {
   "telegram": {
-     "app_id": ,
-     "app_hash": ""
+    "app_id": 100000,
+    "app_hash": "65faaaaaaaaaaaaaaaadddddddddddddd"
   },
-  "profiles": {
-    "profile1": {
+  "profiles": [
+    {
+      "enabled": true,
       "browser": "google chrome",
-      "profileName": null
+      "profileName": "Default"
     }
-  },
+  ],
   "button": {
     "number": 1
   },
   "filters": {
     "PS5": {
-      "max": 500
+      "EUR": {
+        "enabled": true,
+        "maxprice": 500,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": true,
+        "maxprice": 500,
+        "useWarehouse": true
+      }
     },
     "XSX": {
-      "max": 500
+      "EUR": {
+        "enabled": false,
+        "maxprice": 500,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": false,
+        "maxprice": 500,
+        "useWarehouse": true
+      }
     },
     "1660": {
-      "max": 400
+      "EUR": {
+        "enabled": false,
+        "maxprice": 400,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": false,
+        "maxprice": 400,
+        "useWarehouse": true
+      }
     },
     "1660ti": {
-      "max": 600
-    },    
+      "EUR": {
+        "enabled": false,
+        "maxprice": 600,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": false,
+        "maxprice": 600,
+        "useWarehouse": true
+      }
+    },
     "3060": {
-      "max": 600
+      "EUR": {
+        "enabled": true,
+        "maxprice": 600,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": true,
+        "maxprice": 350,
+        "useWarehouse": true
+      }
     },
     "3060_LHR": {
-      "max": 600
+      "EUR": {
+        "enabled": true,
+        "maxprice": 600,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": true,
+        "maxprice": 350,
+        "useWarehouse": true
+      }
     },
     "3060ti": {
-      "max": 600
+      "EUR": {
+        "enabled": true,
+        "maxprice": 800,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": true,
+        "maxprice": 450,
+        "useWarehouse": true
+      }
     },
     "3060ti_LHR": {
-      "max": 800
+      "EUR": {
+        "enabled": true,
+        "maxprice": 800,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": true,
+        "maxprice": 420,
+        "useWarehouse": true
+      }
     },
     "3070": {
-      "max": 900
+      "EUR": {
+        "enabled": true,
+        "maxprice": 900,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": true,
+        "maxprice": 420,
+        "useWarehouse": true
+      }
     },
     "3070_LHR": {
-      "max": 900
+      "EUR": {
+        "enabled": true,
+        "maxprice": 850,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": true,
+        "maxprice": 420,
+        "useWarehouse": true
+      }
     },
     "3070ti_LHR": {
-      "max": 900
+      "EUR": {
+        "enabled": true,
+        "maxprice": 900,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": true,
+        "maxprice": 420,
+        "useWarehouse": true
+      }
     },
     "3080": {
-      "max": 1100
+      "EUR": {
+        "enabled": true,
+        "maxprice": 1300,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": true,
+        "maxprice": 1150,
+        "useWarehouse": true
+      }
     },
     "3080_LHR": {
-      "max": 1100
+      "EUR": {
+        "enabled": true,
+        "maxprice": 1300,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": true,
+        "maxprice": 1150,
+        "useWarehouse": true
+      }
+    },
+    "3080ti": {
+      "EUR": {
+        "enabled": true,
+        "maxprice": 1500,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": true,
+        "maxprice": 420,
+        "useWarehouse": true
+      }
     },
     "3080ti_LHR": {
-      "max": 1100
+      "EUR": {
+        "enabled": true,
+        "maxprice": 1500,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": true,
+        "maxprice": 420,
+        "useWarehouse": true
+      }
     },
     "3090": {
-      "max": 1700
+      "EUR": {
+        "enabled": true,
+        "maxprice": 2200,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": true,
+        "maxprice": 1650,
+        "useWarehouse": true
+      }
     }
   }
 }

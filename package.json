@@ -11,7 +11,11 @@
   "author": "Oizopower",
   "license": "MIT",
   "pkg": {
-    "output": "dist"
+    "output": "dist",
+    "assets": [
+      "node_modules/figlet/fonts/Standard.flf",
+      "node_modules/open/xdg-open"
+    ]
   },
   "dependencies": {
     "figlet": "^1.5.2",
