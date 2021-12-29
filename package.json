@@ -9,7 +9,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Oizopower",
-  "license": "MIT",
+  "license": "Apache-2.0 License",
   "pkg": {
     "output": "dist",
     "assets": [
