@@ -2,7 +2,7 @@
 Open PB Telegram Links
 
 ## Todo
-1. multiple profiles (skip profiles in config.json, those are not working yet)   
+1. write logfile aswell instead of stdout 
 
 ### Download prebuild  
 [Download latest prebuild](https://github.com/Oizopower/PB-Telegram-Linkopener/releases)
@@ -17,7 +17,7 @@ curl -sL https://deb.nodesource.com/setup_16.x | sudo bash -
 sudo apt-get install -y nodejs  
   
 ### Install from source
-cd ~ && git clone https://github.com/Oizopower/PB-Telegram-Linkopener && cd PB-Telegram-Linkopener  
+cd ~ && git clone https://github.com/Oizopower/PB-Telegram-Linkopener && cd PB-Telegram-Linkopener  (or download zip from Github)
 npm install  
 edit config.json to your settings (skip profiles, not yet finished. Should be using default browser now)  
 add app_id and app_hash from https://my.telegram.org/apps 
@@ -36,12 +36,16 @@ node app.js
   "profiles": [
     {
       "enabled": true,
-      "browser": "google chrome",
       "profileName": "Default"
+    },
+    {
+      "enabled": false,
+      "profileName": "Profile 1"
     }
   ],
   "button": {
-    "number": 1
+    "_comment": "Button number 0: checkout, Button number 1: Turbo, Button number 2: Extension URL",
+    "number": 2
   },
   "filters": {
     "PS5": {
@@ -252,6 +256,6 @@ node app.js
 }
 ```
 
-## Update
+## Update from git
 cd ~/PB-Telegram-Linkopener  
 git pull  

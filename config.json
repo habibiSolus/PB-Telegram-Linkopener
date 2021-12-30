@@ -6,11 +6,15 @@
   "profiles": [
     {
       "enabled": true,
-      "browser": "google chrome",
       "profileName": "Default"
+    },
+    {
+      "enabled": false,
+      "profileName": "Profile 1"
     }
   ],
   "button": {
+    "_comment": "Button number 0: checkout, Button number 1: Turbo, Button number 2: Extension URL",
     "number": 2
   },
   "filters": {

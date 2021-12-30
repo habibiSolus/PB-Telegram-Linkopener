@@ -25,7 +25,7 @@ const storeSession = new StoreSession("telegram_session");
 
     figlet('Oizopower', function(err, data) {
         console.log(data);
-        console.log("\n======================================================\n\n Partsbot - Platinum Telegram Link Opener.\n\n Donate: https://www.Ko-fi.com/oizopower\n\n======================================================");
+        console.log("\n======================================================\n\n Partsbot - Platinum Telegram Link Opener.\n\n Donate: https://www.ko-fi.com/oizopower\n\n======================================================");
         console.log("+ Bezig met opstarten");
     });
     
@@ -109,7 +109,13 @@ async function handleMessages(event)
                                 {
                                     if(Config.filters[productModel][amazonCountry]['useWarehouse'])
                                     {
-                                        open(buttonLink);
+                                        for (var i = 0; i < Config.profiles.length; i++) {
+                                            if(Config.profiles[i].enabled)
+                                            {
+                                                let profileChrome = "--profile-directory=" + Config.profiles[i].profileName;
+                                                open(buttonLink, {app: {name: 'chrome', arguments: [profileChrome]}});
+                                            }
+                                        }
                                     }
                                     else
                                     {
@@ -118,7 +124,13 @@ async function handleMessages(event)
                                 }
                                 else
                                 {
-                                    open(buttonLink);
+                                    for (var i = 0; i < Config.profiles.length; i++) {
+                                        if(Config.profiles[i].enabled)
+                                        {
+                                            let profileChrome = "--profile-directory=" + Config.profiles[i].profileName;
+                                            open(buttonLink, {app: {name: 'chrome', arguments: [profileChrome]}});
+                                        }
+                                    }
                                 }
                             } 
                         }
