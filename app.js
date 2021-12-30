@@ -25,7 +25,7 @@ const storeSession = new StoreSession("telegram_session");
 
     figlet('Oizopower', function(err, data) {
         console.log(data);
-        console.log("\n======================================================\n\n Partsbot - Platinum Telegram Link Opener.\n\n Donate: https://www.ko-fi.com/oizopower\n\n======================================================");
+        console.log("\n======================================================\n\n Partsbot - Platinum Telegram Link Opener (v0.0.3)\n\n Donate: https://www.ko-fi.com/oizopower\n\n======================================================");
         console.log("+ Bezig met opstarten");
     });
     
