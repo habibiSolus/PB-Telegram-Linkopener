@@ -9,7 +9,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Oizopower",
-  "license": "GPL-3.0 License",
+  "license": "CC BY-NC-ND 3.0",
   "pkg": {
     "output": "dist",
     "assets": [
