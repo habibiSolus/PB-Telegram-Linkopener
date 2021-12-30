@@ -45,7 +45,7 @@ const storeSession = new StoreSession("telegram_session");
     console.log("+ Wheeee! we zijn verbonden.");
     console.log("=============================================================================================================================="); 
     
-    client.addEventHandler(handleMessages, new NewMessage({}));
+    client.addEventHandler(handleMessages, new NewMessage({chats: [-1001396614919,-1001165395320]}));
 })();
 
 async function handleMessages(event) 
@@ -67,6 +67,7 @@ async function handleMessages(event)
         if(titleUser !== undefined)
         {
             if (titleUser.includes("Direct Buy") || titleUser.includes("PartsBot Amazon Alert") || titleUser.includes("Announcements General"))
+            // if (true)
             {
                 if(Config.button.number == 2)
                 {
