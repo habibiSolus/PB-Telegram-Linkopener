@@ -19,21 +19,18 @@ const apiId = Config.telegram.app_id;
 const apiHash = Config.telegram.app_hash;
 const storeSession = new StoreSession("telegram_session");
 
+let chromeName = "chrome";
 
+var opsys = process.platform;
+if (opsys == "darwin") {
+    chromeName = "google chrome";
+} else if (opsys == "win32" || opsys == "win64") {
+    chromeName = "chrome";
+} else if (opsys == "linux") {
+    opsys = "google chrome";
+}
 
 (async () => {
-
-    let chromeName = "chrome";
-
-    var opsys = process.platform;
-    if (opsys == "darwin") {
-        chromeName = "google chrome";
-    } else if (opsys == "win32" || opsys == "win64") {
-        chromeName = "chrome";
-    } else if (opsys == "linux") {
-        opsys = "google chrome";
-    }
-    
 
     figlet('Oizopower', function(err, data) {
         console.log(data);
