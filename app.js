@@ -23,6 +23,18 @@ const storeSession = new StoreSession("telegram_session");
 
 (async () => {
 
+    let chromeName = "chrome";
+
+    var opsys = process.platform;
+    if (opsys == "darwin") {
+        chromeName = "google chrome";
+    } else if (opsys == "win32" || opsys == "win64") {
+        chromeName = "chrome";
+    } else if (opsys == "linux") {
+        opsys = "google chrome";
+    }
+    
+
     figlet('Oizopower', function(err, data) {
         console.log(data);
         console.log("\n======================================================\n\n Partsbot - Platinum Telegram Link Opener (v0.0.3)\n\n Donate: https://www.ko-fi.com/oizopower\n\n======================================================");
@@ -114,7 +126,7 @@ async function handleMessages(event)
                                             if(Config.profiles[i].enabled)
                                             {
                                                 let profileChrome = "--profile-directory=" + Config.profiles[i].profileName;
-                                                open(buttonLink, {app: {name: 'chrome', arguments: [profileChrome]}});
+                                                open(buttonLink, {app: {name: chromeName, arguments: [profileChrome]}});
                                             }
                                         }
                                     }
@@ -129,7 +141,7 @@ async function handleMessages(event)
                                         if(Config.profiles[i].enabled)
                                         {
                                             let profileChrome = "--profile-directory=" + Config.profiles[i].profileName;
-                                            open(buttonLink, {app: {name: 'chrome', arguments: [profileChrome]}});
+                                            open(buttonLink, {app: {name: chromeName, arguments: [profileChrome]}});
                                         }
                                     }
                                 }
