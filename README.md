@@ -43,7 +43,11 @@ node app.js
     {
       "enabled": false,
       "profileName": "Profile 1"
-    }
+    },
+    {
+      "enabled": false,
+      "profileName": "Profile 2"
+    }    
   ],
   "button": {
     "_comment": "Button number 0: checkout, Button number 1: Turbo, Button number 2: Extension URL",
