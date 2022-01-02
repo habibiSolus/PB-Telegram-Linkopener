@@ -18,11 +18,12 @@
     ]
   },
   "dependencies": {
-    "child_process": "^1.0.2",
     "Console": "^1.1.0",
+    "child_process": "^1.0.2",
     "figlet": "^1.5.2",
     "fs": "0.0.1-security",
     "input": "^1.0.1",
+    "log4js": "^6.3.0",
     "open": "^8.4.0",
     "path": "^0.12.7",
     "telegram": "^2.1.0"

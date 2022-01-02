@@ -11,6 +11,7 @@ const path = require('path');
 const fs = require('fs');
 const { Console } = require("console");
 const { exec } = require("child_process");
+const log4js = require('log4js');
 
 const configPath = path.join(process.cwd(), './config.json');
 const ConfigData = fs.readFileSync(configPath);
@@ -28,6 +29,16 @@ const colours = {
     }
 };
 
+log4js.configure({
+    appenders: { 
+        'file': { type: 'fileSync', filename: 'logs/PB.log', maxLogSize: 10485760, numBackups: 3},
+        console: { type: 'console' }
+    },
+    categories: { default: { appenders: ['file', 'console'], level: 'debug' } }
+});
+
+const logger = log4js.getLogger('PB'); 
+
 let opsys = process.platform;
 if (opsys == "darwin") {
     opsys = "macos";
@@ -41,8 +52,8 @@ if (opsys == "darwin") {
 
     figlet('Oizopower', function(err, data) {
         console.log(data);
-        console.log("\n======================================================\n\n Partsbot - Platinum Telegram Link Opener (v0.0.5)\n\n Donate: https://www.ko-fi.com/oizopower\n\n======================================================");
-        console.log("+ Bezig met opstarten");
+        logger.info("\n======================================================\n\n Partsbot - Platinum Telegram Link Opener (v0.0.5)\n\n Donate: https://www.ko-fi.com/oizopower\n\n======================================================");
+        logger.info("+ Bezig met opstarten");
     });
     
     const client = new TelegramClient(storeSession, apiId, apiHash, 
@@ -55,10 +66,10 @@ if (opsys == "darwin") {
         password: async () => await input.text("+ Je Telegram wachtwoord: "),
         phoneCode: async () =>
         await input.text("+ Voer de code in die je hebt ontvangen: "),
-        onError: (err) => console.log(err),
+        onError: (err) => logger.info(err),
     });
     
-    console.log("+ Wheeee! we zijn verbonden.");
+    logger.info("+ Wheeee! we zijn verbonden.");
     console.log("=============================================================================================================================="); 
     
     client.addEventHandler(handleMessages, new NewMessage({chats: [-1001396614919,-1001165395320]}));
@@ -134,35 +145,35 @@ async function handleMessages(event)
 
                     let colourConsole = filterStatus ? colours.fg.green : colours.fg.red;
 
-                    console.log(colourConsole, "[" + dateTime + "] " + colours.reset + productName);
-                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Model: " + productModel);
-                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Prijs: " + productPrice);
-                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Country: " + amazonCountry);
-                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Is WHD: " + (amazonWareHouse ? "Yes" : "No"));
-                    console.log(colourConsole, "[" + dateTime + "] ", colours.reset);
+                    logger.info(" " + productName);
+                    logger.info(" Model: " + productModel);
+                    logger.info(" Prijs: " + productPrice);
+                    logger.info(" Country: " + amazonCountry);
+                    logger.info(" Is WHD: " + (amazonWareHouse ? "Yes" : "No"));
+                    logger.info(" ");
 
                     if (Config.filters.hasOwnProperty(productModel) && Config.filters[productModel].hasOwnProperty(amazonCountry))
                     {
-                        console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Filters", colours.reset);
-                        console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Enabled: " + (Config.filters[productModel][amazonCountry]['enabled'] ? "Yes" : "No"));
-                        console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Max Prijs: " + Config.filters[productModel][amazonCountry]['maxprice']);
-                        console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " WHD accepted: " + (Config.filters[productModel][amazonCountry]['useWarehouse'] ? "Yes" : "No"));
-                        console.log(colourConsole, "[" + dateTime + "] ", colours.reset);
+                        logger.info(" Filters");
+                        logger.info(" Enabled: " + (Config.filters[productModel][amazonCountry]['enabled'] ? "Yes" : "No"));
+                        logger.info(" Max Prijs: " + Config.filters[productModel][amazonCountry]['maxprice']);
+                        logger.info(" WHD accepted: " + (Config.filters[productModel][amazonCountry]['useWarehouse'] ? "Yes" : "No"));
+                        logger.info(" ");
                     }
 
-                    console.log(colourConsole, "[" + dateTime + "]" + colours.reset + " Filter Status: " + (filterStatus ? "Accepted" : "Denied"));
+                    logger.info(" Filter Status: " + (filterStatus ? "Accepted" : "Denied"));
                     console.log("=============================================================================================================================="); 
                 }
                 else
                 {
-                    console.log("Button niet gevonden");
+                    logger.info("Button niet gevonden");
                 }
             }
         }
     } 
     catch (error) 
     {
-        console.log(error);
+        logger.warn(error);
     }
 }
 
@@ -176,11 +187,11 @@ async function openBrowser(opsys, link)
             {
                 exec('open -n -a "Google Chrome" --args --profile-directory="'+Config.profiles[i].profileName+'" "'+link+'"', (error, stdout, stderr) => {
                     if (error) {
-                        console.log(`error: ${error.message}`);
+                        logger.error(`error: ${error.message}`);
                         return;
                     }
                     if (stderr) {
-                        console.log(`stderr: ${stderr}`);
+                        logger.error(`stderr: ${stderr}`);
                         return;
                     }
                 });
@@ -189,11 +200,11 @@ async function openBrowser(opsys, link)
             {
                 exec('start "" chrome.exe --profile-directory="'+Config.profiles[i].profileName+'" "'+link+'"', (error, stdout, stderr) => {
                     if (error) {
-                        console.log(`error: ${error.message}`);
+                        logger.error(`error: ${error.message}`);
                         return;
                     }
                     if (stderr) {
-                        console.log(`stderr: ${stderr}`);
+                        logger.error(`stderr: ${stderr}`);
                         return;
                     }
                 });
