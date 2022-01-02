@@ -4,6 +4,15 @@ Open PB Telegram Links
 ## Download latest prebuilds  
 [Download latest prebuild](https://github.com/Oizopower/PB-Telegram-Linkopener/releases)
 
+###
+- Advanced filtering
+- Specify UK and EU in filter with seperate prices
+- Multiple Profiles for Chrome
+- Prebuilds, no need to run from source
+- Remove product from config and it skips the product
+- Send message to self on Telegram on successful open
+- Show latest version in startup
+
 ## Installation from source   
 
 ### Install NodeJS and NPM (Windows)
