@@ -11,6 +11,7 @@ const path = require('path');
 const fs = require('fs');
 const { exec } = require("child_process");
 const log4js = require('log4js');
+const request = require('sync-request');
 
 if(!checkFileExistsSync(path.join(process.cwd(), './config.json')))
 {
@@ -50,17 +51,19 @@ if (opsys == "darwin") {
     opsys = "linux";
 }
 
+const client = new TelegramClient(storeSession, apiId, apiHash, 
+{
+    connectionRetries: 5,
+});
+
 (async () => {
+
+    let versionInfo = checkGithubVersion();
 
     figlet('Oizopower', function(err, data) {
         console.log(data);
-        logger.info("\n======================================================\n\n Partsbot - Platinum Telegram Link Opener (v0.0.6)\n\n Donate: https://www.ko-fi.com/oizopower\n\n======================================================");
-        logger.info("+ Bezig met opstarten");
-    });
-    
-    const client = new TelegramClient(storeSession, apiId, apiHash, 
-    {
-        connectionRetries: 5,
+        console.log("\n======================================================\n\n Partsbot - Platinum Telegram Link Opener (v"+versionInfo.local+" Remote-latest: v"+versionInfo.github+") \n\n Donate: https://www.ko-fi.com/oizopower\n\n======================================================");
+        console.log("+ Bezig met opstarten");
     });
     
     await client.start({
@@ -71,7 +74,7 @@ if (opsys == "darwin") {
         onError: (err) => logger.info(err),
     });
     
-    logger.info("+ Wheeee! we zijn verbonden.");
+    console.log("+ Wheeee! we zijn verbonden.");
     console.log("=============================================================================================================================="); 
     
     client.addEventHandler(handleMessages, new NewMessage({chats: [-1001396614919,-1001165395320]}));
@@ -117,7 +120,8 @@ async function handleMessages(event)
                     let dateTime = new Date().toLocaleString();
 
                     let lines = messageText.split('\n');
-                    let productName = lines[lines.length - 1].replace("**","");
+                    let productName = lines[lines.length - 1].replace(/\*\*/g,"");
+                    let website = lines[0].replace(/\*\*/g,"");
 
                     if (Config.filters.hasOwnProperty(productModel)) 
                     {
@@ -130,7 +134,7 @@ async function handleMessages(event)
                                 {
                                     if(Config.filters[productModel][amazonCountry]['useWarehouse'])
                                     {
-                                        openBrowser(opsys, buttonLink);
+                                        openBrowser(opsys, buttonLink, productName);
                                     }
                                     else
                                     {
@@ -139,13 +143,14 @@ async function handleMessages(event)
                                 }
                                 else
                                 {
-                                    openBrowser(opsys, buttonLink);
+                                    openBrowser(opsys, buttonLink, productName);
                                 }
                             } 
                         }
                     }
 
                     logger.info(" " + productName);
+                    logger.info(" Website: " + website);
                     logger.info(" Model: " + productModel);
                     logger.info(" Prijs: " + productPrice);
                     logger.info(" Country: " + amazonCountry);
@@ -177,7 +182,7 @@ async function handleMessages(event)
     }
 }
 
-async function openBrowser(opsys, link) 
+async function openBrowser(opsys, link, productName) 
 {
 
     for (var i = 0; i < Config.profiles.length; i++) {
@@ -216,6 +221,30 @@ async function openBrowser(opsys, link)
             }
         }
     }
+
+    if(Config.telegram.notifySelf !== undefined && Config.telegram.notifySelf)
+    {
+        await client.sendMessage('me',{
+            message:"Following product opened on Telegram Link Opener: \nProduct: " + productName + "\nURL: " + link
+        });
+    }
+}
+
+function checkGithubVersion()
+{
+    /* Local version */
+    const packageFilePath = path.join(process.cwd(), './package.json');
+    const packageFile = fs.readFileSync(packageFilePath);
+    const package = JSON.parse(packageFile);
+    
+    let res = request('GET', 'https://api.github.com/repos/Oizopower/PB-Telegram-Linkopener/releases/latest',{
+        headers: {
+          'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
+        },
+      });
+    let githubVersion = JSON.parse(res.getBody('utf8'));
+
+    return {'local': package.version, 'github': githubVersion.tag_name};
 }
 
 function checkFileExistsSync(filepath){
@@ -226,4 +255,4 @@ function checkFileExistsSync(filepath){
       flag = false;
     }
     return flag;
-  }
+}

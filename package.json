@@ -25,6 +25,7 @@
     "log4js": "^6.3.0",
     "open": "^8.4.0",
     "path": "^0.12.7",
+    "sync-request": "^6.1.0",
     "telegram": "^2.1.0"
   },
   "repository": {}
