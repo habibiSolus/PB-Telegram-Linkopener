@@ -4,3 +4,4 @@ telegram_session/
 .idea/*
 logs/*
 config.json
+package-lock.json
