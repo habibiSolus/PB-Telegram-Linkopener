@@ -13,6 +13,8 @@ const { exec } = require("child_process");
 const log4js = require('log4js');
 const fetch = require('node-fetch');
 
+const version = "0.0.7";
+
 if(!checkFileExistsSync(path.join(process.cwd(), './config.json')))
 {
     console.error("config.json not found, copy and change config.json.sample to config.json");
@@ -232,11 +234,6 @@ async function openBrowser(opsys, link, productName)
 
 async function checkGithubVersion()
 {
-    /* Local version */
-    const packageFilePath = path.join(process.cwd(), './package.json');
-    const packageFile = fs.readFileSync(packageFilePath);
-    const package = JSON.parse(packageFile);
-    
     const response = await fetch('https://api.github.com/repos/Oizopower/PB-Telegram-Linkopener/releases/latest', {
         headers: 
         {
@@ -246,7 +243,7 @@ async function checkGithubVersion()
     });
     
     const data = await response.json();
-    return {'local': package.version, 'github': data.tag_name};
+    return {'local': version, 'github': data.tag_name};
 }
 
 function checkFileExistsSync(filepath){
