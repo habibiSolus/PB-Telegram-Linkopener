@@ -3,6 +3,8 @@ Open PB Telegram Links
 
 ## Todo
 1. write logfile aswell instead of stdout 
+2. Show update message in the app
+3. rewrite a bit of code
 
 ### Download prebuild  
 [Download latest prebuild](https://github.com/Oizopower/PB-Telegram-Linkopener/releases)
