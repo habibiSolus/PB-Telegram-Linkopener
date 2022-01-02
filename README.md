@@ -13,6 +13,9 @@ Open PB Telegram Links
 - Send message to self on Telegram on successful open
 - Show latest version in startup
 
+## config.json configuration
+See config.json.sample for examples and new settings [here](config.json.sample)
+
 ## Installation from source   
 
 ### Install NodeJS and NPM (Windows)
@@ -34,11 +37,6 @@ Start with
 ```
 node app.js
 ```
-
-## config.json configuration
-See config.json.sample for examples and new settings [here](config.json.sample)
-
-
 ## Update from git
 cd ~/PB-Telegram-Linkopener  
 git pull  
