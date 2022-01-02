@@ -12,6 +12,12 @@ const fs = require('fs');
 const { exec } = require("child_process");
 const log4js = require('log4js');
 
+if(!checkFileExistsSync(path.join(process.cwd(), './config.json')))
+{
+    console.error("config.json not found, copy and change config.json.sample to config.json");
+    return;
+}
+
 const configPath = path.join(process.cwd(), './config.json');
 const ConfigData = fs.readFileSync(configPath);
 const Config = JSON.parse(ConfigData);
@@ -211,3 +217,13 @@ async function openBrowser(opsys, link)
         }
     }
 }
+
+function checkFileExistsSync(filepath){
+    let flag = true;
+    try{
+      fs.accessSync(filepath, fs.constants.F_OK);
+    }catch(e){
+      flag = false;
+    }
+    return flag;
+  }
