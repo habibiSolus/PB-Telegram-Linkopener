@@ -191,7 +191,7 @@ async function handleMessages(event)
                         logger.info(" ");
                     }
                     
-                    logger.info(" Filter Status: " + (filterStatus ? "Accepted" : "Denied"));
+                    logger.info(" Filter Status: " + (filterStatus ? "\x1b[32mAccepted\x1b[0m" : "\x1b[31mDenied\x1b[0m"));
                     console.log("=============================================================================================================================="); 
                 }
                 else
