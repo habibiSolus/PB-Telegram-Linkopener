@@ -176,18 +176,15 @@ async function handleMessages(event)
                     if (Config.filters.hasOwnProperty(productData.productModel) && Config.filters[productData.productModel].hasOwnProperty(productData.amazonCountry))
                     {
                         logger.info(" Filters");
-                        logger.info(" Enabled: " + (Config.filters[productData.productModel][productData.amazonCountry]['enabled'] ? "Ja" : "Nee"));
-                        logger.info(" Max Prijs: " + Config.filters[productData.productModel][productData.amazonCountry]['maxprice']);
-                        logger.info(" WHD accepted: " + (Config.filters[productData.productModel][productData.amazonCountry]['useWarehouse'] ? "Ja" : "Nee"));
+                        logger.info(" Enabled: " + (Config.filters[productData.productModel][productData.amazonCountry]['enabled'] ? "Ja" : "Nee") + ", Max Prijs: " + Config.filters[productData.productModel][productData.amazonCountry]['maxprice'] + ", WHD accepted: " + (Config.filters[productData.productModel][productData.amazonCountry]['useWarehouse'] ? "Ja" : "Nee"));
                         logger.info(" ");
                     }
                     if (Config.filters.hasOwnProperty(productData.productModel) && 
                         Config.filters[productData.productModel].hasOwnProperty("advanced") && 
                         Config.filters[productData.productModel]["advanced"].hasOwnProperty("buttons"))
                     {
-                        logger.info(" Advanced");
-                        logger.info(" Gebruik custom buttons: " + (Config.filters[productData.productModel]["advanced"]["buttons"]["enableMultipleButtons"] ? "Ja" : "Nee"));
-                        logger.info(" Custom buttons: " + Config.filters[productData.productModel]["advanced"]["buttons"]["overrideButtons"]);
+                        logger.info(" Geavanceerde filters:");
+                        logger.info(" Gebruik custom buttons: " + (Config.filters[productData.productModel]["advanced"]["buttons"]["enableMultipleButtons"] ? "Ja" : "Nee") + ", Custom buttons: " + Config.filters[productData.productModel]["advanced"]["buttons"]["overrideButtons"]);
                         logger.info(" ");
                     }
                     
