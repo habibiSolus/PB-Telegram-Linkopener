@@ -20,6 +20,11 @@ const apiId = Config.telegram.app_id;
 const apiHash = Config.telegram.app_hash;
 const storeSession = new StoreSession("telegram_session");
 
+var dir = __dirname + '/logs';
+if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, 0744);
+}
+
 log4js.configure({
     appenders: { 
         'file': { type: 'fileSync', filename: 'logs/PB.log', maxLogSize: 10485760, numBackups: 3},
