@@ -11,7 +11,7 @@ const path = require('path');
 const fs = require('fs');
 const { exec } = require("child_process");
 const log4js = require('log4js');
-const request = require('sync-request');
+const fetch = require('node-fetch');
 
 if(!checkFileExistsSync(path.join(process.cwd(), './config.json')))
 {
@@ -58,11 +58,11 @@ const client = new TelegramClient(storeSession, apiId, apiHash,
 
 (async () => {
 
-    let versionInfo = checkGithubVersion();
+    let versionInfo = await checkGithubVersion();
 
     figlet('Oizopower', function(err, data) {
         console.log(data);
-        console.log("\n======================================================\n\n Partsbot - Platinum Telegram Link Opener (v"+versionInfo.local+" Remote-latest: v"+versionInfo.github+") \n\n Donate: https://www.ko-fi.com/oizopower\n\n======================================================");
+        console.log("\n======================================================\n\n Partsbot - Platinum Telegram Link Opener (v"+versionInfo.local+" Remote-latest: v"+versionInfo.github+")\n\n Donate: https://www.ko-fi.com/oizopower\n\n======================================================");
         console.log("+ Bezig met opstarten");
     });
     
@@ -230,21 +230,23 @@ async function openBrowser(opsys, link, productName)
     }
 }
 
-function checkGithubVersion()
+async function checkGithubVersion()
 {
     /* Local version */
     const packageFilePath = path.join(process.cwd(), './package.json');
     const packageFile = fs.readFileSync(packageFilePath);
     const package = JSON.parse(packageFile);
     
-    let res = request('GET', 'https://api.github.com/repos/Oizopower/PB-Telegram-Linkopener/releases/latest',{
-        headers: {
-          'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
-        },
-      });
-    let githubVersion = JSON.parse(res.getBody('utf8'));
-
-    return {'local': package.version, 'github': githubVersion.tag_name};
+    const response = await fetch('https://api.github.com/repos/Oizopower/PB-Telegram-Linkopener/releases/latest', {
+        headers: 
+        {
+            'Content-Type': 'application/json',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
+        }
+    });
+    
+    const data = await response.json();
+    return {'local': package.version, 'github': data.tag_name};
 }
 
 function checkFileExistsSync(filepath){
