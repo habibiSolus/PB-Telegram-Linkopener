@@ -20,7 +20,15 @@ const apiId = Config.telegram.app_id;
 const apiHash = Config.telegram.app_hash;
 const storeSession = new StoreSession("telegram_session");
 
-var opsys = process.platform;
+const colours = {
+    reset: "\x1b[0m",
+    fg: {
+        red: "\x1b[31m",
+        green: "\x1b[32m",
+    }
+};
+
+let opsys = process.platform;
 if (opsys == "darwin") {
     opsys = "macos";
 } else if (opsys == "win32" || opsys == "win64") {
@@ -60,14 +68,6 @@ async function handleMessages(event)
 {
     const message = event.message;
     const sender = await message.getSender();
-    
-    const colours = {
-        reset: "\x1b[0m",
-        fg: {
-            red: "\x1b[31m",
-            green: "\x1b[32m",
-        }
-    };
 
     try {
         let titleUser = sender.title;
@@ -75,7 +75,6 @@ async function handleMessages(event)
         if(titleUser !== undefined)
         {
             if (titleUser.includes("Direct Buy") || titleUser.includes("PartsBot Amazon Alert") || titleUser.includes("Announcements General"))
-            // if (true)
             {
                 if(Config.button.number == 2)
                 {
@@ -118,44 +117,7 @@ async function handleMessages(event)
                                 {
                                     if(Config.filters[productModel][amazonCountry]['useWarehouse'])
                                     {
-                                        for (var i = 0; i < Config.profiles.length; i++) {
-                                            if(Config.profiles[i].enabled)
-                                            {
-                                                if(opsys == "macos")
-                                                {
-                                                    exec('open -n -a "Google Chrome" --args --profile-directory="'+Config.profiles[i].profileName+'" "'+buttonLink+'"', (error, stdout, stderr) => {
-                                                        if (error) {
-                                                            console.log(`error: ${error.message}`);
-                                                            return;
-                                                        }
-                                                        if (stderr) {
-                                                            console.log(`stderr: ${stderr}`);
-                                                            return;
-                                                        }
-                                                        // console.log(`stdout: ${stdout}`);
-                                                    });
-                                                }
-                                                else if (opsys == "windows")
-                                                {
-                                                    exec('start "" chrome.exe --profile-directory="'+Config.profiles[i].profileName+'" "'+buttonLink+'"', (error, stdout, stderr) => {
-                                                        if (error) {
-                                                            console.log(`error: ${error.message}`);
-                                                            return;
-                                                        }
-                                                        if (stderr) {
-                                                            console.log(`stderr: ${stderr}`);
-                                                            return;
-                                                        }
-                                                        // console.log(`stdout: ${stdout}`);
-                                                    });
-                                                }
-                                                else
-                                                {
-                                                    let profileChrome = "--profile-directory=" + Config.profiles[i].profileName;
-                                                    open(buttonLink, {app: {name: "chrome", arguments: [profileChrome]}});
-                                                }
-                                            }
-                                        }
+                                        openBrowser(opsys, buttonLink);
                                     }
                                     else
                                     {
@@ -164,44 +126,7 @@ async function handleMessages(event)
                                 }
                                 else
                                 {
-                                    for (var i = 0; i < Config.profiles.length; i++) {
-                                        if(Config.profiles[i].enabled)
-                                        {
-                                            if(opsys == "macos")
-                                            {
-                                                exec('open -n -a "Google Chrome" --args --profile-directory="'+Config.profiles[i].profileName+'" "'+buttonLink+'"', (error, stdout, stderr) => {
-                                                    if (error) {
-                                                        console.log(`error: ${error.message}`);
-                                                        return;
-                                                    }
-                                                    if (stderr) {
-                                                        console.log(`stderr: ${stderr}`);
-                                                        return;
-                                                    }
-                                                    // console.log(`stdout: ${stdout}`);
-                                                });
-                                            }
-                                            else if (opsys == "windows")
-                                            {
-                                                exec('start "" chrome.exe --profile-directory="'+Config.profiles[i].profileName+'" "'+buttonLink+'"', (error, stdout, stderr) => {
-                                                    if (error) {
-                                                        console.log(`error: ${error.message}`);
-                                                        return;
-                                                    }
-                                                    if (stderr) {
-                                                        console.log(`stderr: ${stderr}`);
-                                                        return;
-                                                    }
-                                                    // console.log(`stdout: ${stdout}`);
-                                                });
-                                            }
-                                            else
-                                            {
-                                                let profileChrome = "--profile-directory=" + Config.profiles[i].profileName;
-                                                open(buttonLink, {app: {name: "chrome", arguments: [profileChrome]}});
-                                            }
-                                        }
-                                    }
+                                    openBrowser(opsys, buttonLink);
                                 }
                             } 
                         }
@@ -238,5 +163,46 @@ async function handleMessages(event)
     catch (error) 
     {
         console.log(error);
+    }
+}
+
+async function openBrowser(opsys, link) 
+{
+
+    for (var i = 0; i < Config.profiles.length; i++) {
+        if(Config.profiles[i].enabled)
+        {
+            if(opsys == "macos")
+            {
+                exec('open -n -a "Google Chrome" --args --profile-directory="'+Config.profiles[i].profileName+'" "'+link+'"', (error, stdout, stderr) => {
+                    if (error) {
+                        console.log(`error: ${error.message}`);
+                        return;
+                    }
+                    if (stderr) {
+                        console.log(`stderr: ${stderr}`);
+                        return;
+                    }
+                });
+            }
+            else if (opsys == "windows")
+            {
+                exec('start "" chrome.exe --profile-directory="'+Config.profiles[i].profileName+'" "'+link+'"', (error, stdout, stderr) => {
+                    if (error) {
+                        console.log(`error: ${error.message}`);
+                        return;
+                    }
+                    if (stderr) {
+                        console.log(`stderr: ${stderr}`);
+                        return;
+                    }
+                });
+            }
+            else
+            {
+                let profileChrome = "--profile-directory=" + Config.profiles[i].profileName;
+                open(link, {app: {name: "chrome", arguments: [profileChrome]}});
+            }
+        }
     }
 }
