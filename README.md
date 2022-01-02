@@ -12,6 +12,7 @@ Open PB Telegram Links
 - Remove product from config and it skips the product
 - Send message to self on Telegram on successful open
 - Show latest version in startup
+- Advanced buttons section for pressing multiple buttons on alert.
 
 ## config.json configuration
 See config.json.sample for examples and new settings [here](config.json.sample)
