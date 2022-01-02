@@ -24,7 +24,7 @@ add app_id and app_hash from https://my.telegram.org/apps
 Change Chrome profile names (Use Default for default one, Profile 1 for first created profile, Profile 2 for second created profile etc)
 
 
-Starten with
+Start with
 ```
 node app.js
 ```
