@@ -187,11 +187,11 @@ async function openBrowser(opsys, link)
             {
                 exec('open -n -a "Google Chrome" --args --profile-directory="'+Config.profiles[i].profileName+'" "'+link+'"', (error, stdout, stderr) => {
                     if (error) {
-                        logger.error(`error: ${error.message}`);
+                        logger.warn(`error: ${error.message}`);
                         return;
                     }
                     if (stderr) {
-                        logger.error(`stderr: ${stderr}`);
+                        logger.warn(`stderr: ${stderr}`);
                         return;
                     }
                 });
@@ -200,11 +200,11 @@ async function openBrowser(opsys, link)
             {
                 exec('start "" chrome.exe --profile-directory="'+Config.profiles[i].profileName+'" "'+link+'"', (error, stdout, stderr) => {
                     if (error) {
-                        logger.error(`error: ${error.message}`);
+                        logger.warn(`error: ${error.message}`);
                         return;
                     }
                     if (stderr) {
-                        logger.error(`stderr: ${stderr}`);
+                        logger.warn(`stderr: ${stderr}`);
                         return;
                     }
                 });
