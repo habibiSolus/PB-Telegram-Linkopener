@@ -258,7 +258,7 @@ async function openBrowser(opsys, buttonLink, productData)
             {
                 if(opsys == "macos")
                 {
-                    exec('open -n -a "Google Chrome" --args --profile-directory="'+Config.profiles[i].profileName+'" "'+buttonLink[Config.defaultButton.number]+'"', (error, stdout, stderr) => {
+                    exec('open -n -a "Google Chrome" --args --profile-directory="'+Config.profiles[i].profileName+'" "'+buttonLink[Config.button.number]+'"', (error, stdout, stderr) => {
                         if (error) {
                             logger.warn(`error: ${error.message}`);
                             return;
@@ -271,7 +271,7 @@ async function openBrowser(opsys, buttonLink, productData)
                 }
                 else if (opsys == "windows")
                 {
-                    exec('start "" chrome.exe --profile-directory="'+Config.profiles[i].profileName+'" "'+buttonLink[Config.defaultButton.number]+'"', (error, stdout, stderr) => {
+                    exec('start "" chrome.exe --profile-directory="'+Config.profiles[i].profileName+'" "'+buttonLink[Config.button.number]+'"', (error, stdout, stderr) => {
                         if (error) {
                             logger.warn(`error: ${error.message}`);
                             return;
@@ -285,7 +285,7 @@ async function openBrowser(opsys, buttonLink, productData)
                 else
                 {
                     let profileChrome = "--profile-directory=" + Config.profiles[i].profileName;
-                    open(buttonLink[Config.defaultButton.number], {app: {name: "chrome", arguments: [profileChrome]}});
+                    open(buttonLink[Config.button.number], {app: {name: "chrome", arguments: [profileChrome]}});
                 }
             }
 
