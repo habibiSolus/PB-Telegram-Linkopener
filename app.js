@@ -86,6 +86,7 @@ async function handleMessages(event)
 {
     const message = event.message;
     const sender = await message.getSender();
+    const buttonLink = [];
 
     try {
         let titleUser = sender.title;
@@ -94,49 +95,62 @@ async function handleMessages(event)
         {
             if (titleUser.includes("Direct Buy") || titleUser.includes("PartsBot Amazon Alert") || titleUser.includes("Announcements General"))
             {
-                if(Config.button.number == 2)
+                // Make array of all possible buttons
+                try{
+                    buttonLink.push(message.replyMarkup.rows[0].buttons[0].url);
+                } catch (error) {
+                    logger.warn(" Button 1 does not exists on this alert");
+                }
+
+                if(buttonLink.length > 0)
                 {
+
                     try{
-                        buttonLink = message.replyMarkup.rows[0].buttons[Config.button.number].url;
-                    } catch (error) 
-                    {
-                        buttonLink = message.replyMarkup.rows[0].buttons[1].url;
+                        buttonLink.push(message.replyMarkup.rows[0].buttons[1].url);
+                    } catch (error) {
+                        buttonLink.push(message.replyMarkup.rows[0].buttons[1].url);
+                        logger.warn(" Button 2 does not exists on this alert, using button 1 as fallback for button 2");
                     }
-                }
-                else
-                {
-                    buttonLink = message.replyMarkup.rows[0].buttons[Config.button.number].url;
-                }
     
-                if(buttonLink)
-                {
+                    try{
+                        buttonLink.push(message.replyMarkup.rows[0].buttons[2].url);
+                    } catch (error) {
+                        buttonLink.push(message.replyMarkup.rows[0].buttons[1].url);
+                        logger.warn(" Button 3 does not exists on this alert, using button 2 as fallback for button 3");
+                    }
+
                     let messageText = message.text;
-                    let productModel = messageText.match(/Model: (.*)/i)[1];
-                    let productSoldBy = messageText.match(/Sold by: (.*)/i)[1];
+
                     let productPriceReg = messageText.match(/Price: (.*)/i)[1];
-                    let amazonCountry = productPriceReg.includes("€") ? "EUR" : "UK";
                     let productPriceTemp = productPriceReg.replace(/[^0-9+-]/g, '');
-                    let productPrice = parseFloat(productPriceTemp/100);
-                    let amazonWareHouse = (productSoldBy.includes("Warehouse")) ? true : false;
-                    let filterStatus = false;
-                    let dateTime = new Date().toLocaleString();
-
                     let lines = messageText.split('\n');
-                    let productName = lines[lines.length - 1].replace(/\*\*/g,"");
-                    let website = lines[0].replace(/\*\*/g,"");
+                    let productSoldBy = messageText.match(/Sold by: (.*)/i)[1];
 
-                    if (Config.filters.hasOwnProperty(productModel)) 
+                    let productData = {
+                        "productModel": messageText.match(/Model: (.*)/i)[1],
+                        "productSoldBy": productSoldBy,
+                        "amazonCountry": productPriceReg.includes("€") ? "EUR" : "UK",
+                        "productPrice": parseFloat(productPriceTemp/100),
+                        "amazonWareHouse": (productSoldBy.includes("Warehouse")) ? true : false,
+                        "dateTime": new Date().toLocaleString(),
+                        "productName": lines[lines.length - 1].replace(/\*\*/g,""),
+                        "website": lines[0].replace(/\*\*/g,"")
+                    }
+
+                    let filterStatus = false;
+
+                    if (Config.filters.hasOwnProperty(productData.productModel)) 
                     {
-                        if (Config.filters[productModel].hasOwnProperty(amazonCountry))
+                        if (Config.filters[productData.productModel].hasOwnProperty(productData.amazonCountry))
                         {
-                            if( productPrice <= Config.filters[productModel][amazonCountry]['maxprice'] && Config.filters[productModel][amazonCountry]['enabled'] )
+                            if( productData.productPrice <= Config.filters[productData.productModel][productData.amazonCountry]['maxprice'] && Config.filters[productData.productModel][productData.amazonCountry]['enabled'] )
                             {
                                 filterStatus = true;
-                                if(amazonWareHouse)
+                                if(productData.amazonWareHouse)
                                 {
-                                    if(Config.filters[productModel][amazonCountry]['useWarehouse'])
+                                    if(Config.filters[productData.productModel][productData.amazonCountry]['useWarehouse'])
                                     {
-                                        openBrowser(opsys, buttonLink, productName);
+                                        openBrowser(opsys, buttonLink, productData);
                                     }
                                     else
                                     {
@@ -145,35 +159,44 @@ async function handleMessages(event)
                                 }
                                 else
                                 {
-                                    openBrowser(opsys, buttonLink, productName);
+                                    openBrowser(opsys, buttonLink, productData);
                                 }
                             } 
                         }
                     }
 
-                    logger.info(" " + productName);
-                    logger.info(" Website: " + website);
-                    logger.info(" Model: " + productModel);
-                    logger.info(" Prijs: " + productPrice);
-                    logger.info(" Country: " + amazonCountry);
-                    logger.info(" Is WHD: " + (amazonWareHouse ? "Yes" : "No"));
+                    logger.info(" " + productData.productName);
+                    logger.info(" Website: " + productData.website);
+                    logger.info(" Model: " + productData.productModel);
+                    logger.info(" Prijs: " + productData.productPrice);
+                    logger.info(" Country: " + productData.amazonCountry);
+                    logger.info(" Is WHD: " + (productData.amazonWareHouse ? "Ja" : "Nee"));
                     logger.info(" ");
 
-                    if (Config.filters.hasOwnProperty(productModel) && Config.filters[productModel].hasOwnProperty(amazonCountry))
+                    if (Config.filters.hasOwnProperty(productData.productModel) && Config.filters[productData.productModel].hasOwnProperty(productData.amazonCountry))
                     {
                         logger.info(" Filters");
-                        logger.info(" Enabled: " + (Config.filters[productModel][amazonCountry]['enabled'] ? "Yes" : "No"));
-                        logger.info(" Max Prijs: " + Config.filters[productModel][amazonCountry]['maxprice']);
-                        logger.info(" WHD accepted: " + (Config.filters[productModel][amazonCountry]['useWarehouse'] ? "Yes" : "No"));
+                        logger.info(" Enabled: " + (Config.filters[productData.productModel][productData.amazonCountry]['enabled'] ? "Ja" : "Nee"));
+                        logger.info(" Max Prijs: " + Config.filters[productData.productModel][productData.amazonCountry]['maxprice']);
+                        logger.info(" WHD accepted: " + (Config.filters[productData.productModel][productData.amazonCountry]['useWarehouse'] ? "Ja" : "Nee"));
                         logger.info(" ");
                     }
-
+                    if (Config.filters.hasOwnProperty(productData.productModel) && 
+                        Config.filters[productData.productModel].hasOwnProperty("advanced") && 
+                        Config.filters[productData.productModel]["advanced"].hasOwnProperty("buttons"))
+                    {
+                        logger.info(" Advanced");
+                        logger.info(" Gebruik custom buttons: " + (Config.filters[productData.productModel]["advanced"]["buttons"]["enableMultipleButtons"] ? "Ja" : "Nee"));
+                        logger.info(" Custom buttons: " + Config.filters[productData.productModel]["advanced"]["buttons"]["overrideButtons"]);
+                        logger.info(" ");
+                    }
+                    
                     logger.info(" Filter Status: " + (filterStatus ? "Accepted" : "Denied"));
                     console.log("=============================================================================================================================="); 
                 }
                 else
                 {
-                    logger.info("Button niet gevonden");
+                    logger.warn("Button niet gevonden");
                 }
             }
         }
@@ -184,43 +207,89 @@ async function handleMessages(event)
     }
 }
 
-async function openBrowser(opsys, link, productName) 
+async function openBrowser(opsys, buttonLink, productData) 
 {
-
-    for (var i = 0; i < Config.profiles.length; i++) {
+    for (var i = 0; i < Config.profiles.length; i++) 
+    {
         if(Config.profiles[i].enabled)
         {
-            if(opsys == "macos")
+            if (Config.filters.hasOwnProperty(productData.productModel) && 
+                Config.filters[productData.productModel].hasOwnProperty("advanced") && 
+                Config.filters[productData.productModel]["advanced"].hasOwnProperty("buttons")
+                && Config.filters[productData.productModel]["advanced"]["buttons"]["enableMultipleButtons"])
             {
-                exec('open -n -a "Google Chrome" --args --profile-directory="'+Config.profiles[i].profileName+'" "'+link+'"', (error, stdout, stderr) => {
-                    if (error) {
-                        logger.warn(`error: ${error.message}`);
-                        return;
+                let multipleLinks = Config.filters[productData.productModel]["advanced"]["buttons"]["overrideButtons"];
+                for(var j = 0; j < multipleLinks.length; j++)
+                {
+                    if(opsys == "macos")
+                    {
+                        exec('open -n -a "Google Chrome" --args --profile-directory="'+Config.profiles[i].profileName+'" "'+buttonLink[multipleLinks[j]]+'"', (error, stdout, stderr) => {
+                            if (error) {
+                                logger.warn(`error: ${error.message}`);
+                                return;
+                            }
+                            if (stderr) {
+                                logger.warn(`stderr: ${stderr}`);
+                                return;
+                            }
+                        });
                     }
-                    if (stderr) {
-                        logger.warn(`stderr: ${stderr}`);
-                        return;
+                    else if (opsys == "windows")
+                    {
+                        exec('start "" chrome.exe --profile-directory="'+Config.profiles[i].profileName+'" "'+buttonLink[multipleLinks[j]]+'"', (error, stdout, stderr) => {
+                            if (error) {
+                                logger.warn(`error: ${error.message}`);
+                                return;
+                            }
+                            if (stderr) {
+                                logger.warn(`stderr: ${stderr}`);
+                                return;
+                            }
+                        });
                     }
-                });
-            }
-            else if (opsys == "windows")
-            {
-                exec('start "" chrome.exe --profile-directory="'+Config.profiles[i].profileName+'" "'+link+'"', (error, stdout, stderr) => {
-                    if (error) {
-                        logger.warn(`error: ${error.message}`);
-                        return;
+                    else
+                    {
+                        let profileChrome = "--profile-directory=" + Config.profiles[i].profileName;
+                        open(buttonLink[multipleLinks[j]], {app: {name: "chrome", arguments: [profileChrome]}});
                     }
-                    if (stderr) {
-                        logger.warn(`stderr: ${stderr}`);
-                        return;
-                    }
-                });
+                }
             }
             else
             {
-                let profileChrome = "--profile-directory=" + Config.profiles[i].profileName;
-                open(link, {app: {name: "chrome", arguments: [profileChrome]}});
+                if(opsys == "macos")
+                {
+                    exec('open -n -a "Google Chrome" --args --profile-directory="'+Config.profiles[i].profileName+'" "'+buttonLink[Config.defaultButton.number]+'"', (error, stdout, stderr) => {
+                        if (error) {
+                            logger.warn(`error: ${error.message}`);
+                            return;
+                        }
+                        if (stderr) {
+                            logger.warn(`stderr: ${stderr}`);
+                            return;
+                        }
+                    });
+                }
+                else if (opsys == "windows")
+                {
+                    exec('start "" chrome.exe --profile-directory="'+Config.profiles[i].profileName+'" "'+buttonLink[Config.defaultButton.number]+'"', (error, stdout, stderr) => {
+                        if (error) {
+                            logger.warn(`error: ${error.message}`);
+                            return;
+                        }
+                        if (stderr) {
+                            logger.warn(`stderr: ${stderr}`);
+                            return;
+                        }
+                    });
+                }
+                else
+                {
+                    let profileChrome = "--profile-directory=" + Config.profiles[i].profileName;
+                    open(buttonLink[Config.defaultButton.number], {app: {name: "chrome", arguments: [profileChrome]}});
+                }
             }
+
+            
         }
     }
 
