@@ -252,6 +252,13 @@ async function openBrowser(opsys, buttonLink, productData)
                         let profileChrome = "--profile-directory=" + Config.profiles[i].profileName;
                         open(buttonLink[multipleLinks[j]], {app: {name: "chrome", arguments: [profileChrome]}});
                     }
+
+                    if(Config.telegram.notifySelf !== undefined && Config.telegram.notifySelf)
+                    {
+                        await client.sendMessage('me',{
+                            message:"Following product opened on Telegram Link Opener: \nProduct: " + productData.productName + "\nURL: " + buttonLink[multipleLinks[j]]
+                        });
+                    }
                 }
             }
             else
@@ -287,17 +294,17 @@ async function openBrowser(opsys, buttonLink, productData)
                     let profileChrome = "--profile-directory=" + Config.profiles[i].profileName;
                     open(buttonLink[Config.button.number], {app: {name: "chrome", arguments: [profileChrome]}});
                 }
+
+                if(Config.telegram.notifySelf !== undefined && Config.telegram.notifySelf)
+                {
+                    await client.sendMessage('me',{
+                        message:"Following product opened on Telegram Link Opener: \nProduct: " + productData.productName + "\nURL: " + buttonLink[Config.button.number]
+                    });
+                }
             }
 
             
         }
-    }
-
-    if(Config.telegram.notifySelf !== undefined && Config.telegram.notifySelf)
-    {
-        await client.sendMessage('me',{
-            message:"Following product opened on Telegram Link Opener: \nProduct: " + productName + "\nURL: " + link
-        });
     }
 }
 
