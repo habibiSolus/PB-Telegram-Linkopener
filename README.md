@@ -3,6 +3,8 @@ Open PB Telegram Links
 
 ## Todo
 1. write logfile aswell instead of stdout 
+2. Show update message in the app
+3. rewrite a bit of code
 
 ### Download prebuild  
 [Download latest prebuild](https://github.com/Oizopower/PB-Telegram-Linkopener/releases)
@@ -24,7 +26,7 @@ add app_id and app_hash from https://my.telegram.org/apps
 Change Chrome profile names (Use Default for default one, Profile 1 for first created profile, Profile 2 for second created profile etc)
 
 
-Starten with
+Start with
 ```
 node app.js
 ```
@@ -43,7 +45,11 @@ node app.js
     {
       "enabled": false,
       "profileName": "Profile 1"
-    }
+    },
+    {
+      "enabled": false,
+      "profileName": "Profile 2"
+    }    
   ],
   "button": {
     "_comment": "Button number 0: checkout, Button number 1: Turbo, Button number 2: Extension URL",
