@@ -20,7 +20,7 @@ const apiId = Config.telegram.app_id;
 const apiHash = Config.telegram.app_hash;
 const storeSession = new StoreSession("telegram_session");
 
-var dir = __dirname + '/logs';
+var dir = path.join(process.cwd(), '/logs');
 if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, 0744);
 }
