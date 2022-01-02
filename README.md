@@ -4,7 +4,7 @@ Open PB Telegram Links
 ## Download latest prebuilds  
 [Download latest prebuild](https://github.com/Oizopower/PB-Telegram-Linkopener/releases)
 
-###
+## Features
 - Advanced filtering
 - Specify UK and EU in filter with seperate prices
 - Multiple Profiles for Chrome
