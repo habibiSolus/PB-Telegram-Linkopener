@@ -9,7 +9,6 @@ const figlet = require("figlet");
 const open = require('open');
 const path = require('path');
 const fs = require('fs');
-const { Console } = require("console");
 const { exec } = require("child_process");
 const log4js = require('log4js');
 
@@ -20,14 +19,6 @@ const Config = JSON.parse(ConfigData);
 const apiId = Config.telegram.app_id;
 const apiHash = Config.telegram.app_hash;
 const storeSession = new StoreSession("telegram_session");
-
-const colours = {
-    reset: "\x1b[0m",
-    fg: {
-        red: "\x1b[31m",
-        green: "\x1b[32m",
-    }
-};
 
 log4js.configure({
     appenders: { 
@@ -52,7 +43,7 @@ if (opsys == "darwin") {
 
     figlet('Oizopower', function(err, data) {
         console.log(data);
-        logger.info("\n======================================================\n\n Partsbot - Platinum Telegram Link Opener (v0.0.5)\n\n Donate: https://www.ko-fi.com/oizopower\n\n======================================================");
+        logger.info("\n======================================================\n\n Partsbot - Platinum Telegram Link Opener (v0.0.6)\n\n Donate: https://www.ko-fi.com/oizopower\n\n======================================================");
         logger.info("+ Bezig met opstarten");
     });
     
@@ -142,8 +133,6 @@ async function handleMessages(event)
                             } 
                         }
                     }
-
-                    let colourConsole = filterStatus ? colours.fg.green : colours.fg.red;
 
                     logger.info(" " + productName);
                     logger.info(" Model: " + productModel);
