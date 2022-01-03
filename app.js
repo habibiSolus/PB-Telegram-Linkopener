@@ -13,7 +13,7 @@ const { exec } = require("child_process");
 const log4js = require('log4js');
 const fetch = require('node-fetch');
 
-const version = "0.0.8";
+const version = "0.0.9";
 
 if(!checkFileExistsSync(path.join(process.cwd(), './config.json')))
 {
