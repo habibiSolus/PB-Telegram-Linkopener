@@ -78,7 +78,8 @@ const client = new TelegramClient(storeSession, apiId, apiHash,
     
     console.log("+ Wheeee! we zijn verbonden.");
     console.log("=============================================================================================================================="); 
-    
+    printMemoryUsage();
+
     client.addEventHandler(handleMessages, new NewMessage({chats: [-1001396614919,-1001165395320]}));
 })();
 
@@ -331,3 +332,12 @@ function checkFileExistsSync(filepath){
     }
     return flag;
 }
+
+function printMemoryUsage()
+{
+    let mem = process.memoryUsage();
+    logger.mark(" MEMORY USAGE - RSS: " + mem.rss + " | HEAPTOTAL: " + mem.heapTotal + " | HEAPUSED: " + mem.heapUsed + " | EXTERNAL: " + mem.external + " | ARRAYBUFFERS: " + mem.arrayBuffers )
+    console.log("=============================================================================================================================="); 
+}
+
+setInterval(printMemoryUsage, 60 * 60 * 1000);
