@@ -30,7 +30,7 @@ sudo apt-get install -y nodejs
 git clone https://github.com/Oizopower/PB-Telegram-Linkopener && cd PB-Telegram-Linkopener  (or download zip from Github)
 npm install  
 edit config.json to your settings
-add app_id and app_hash from https://my.telegram.org/apps 
+add app_id and app_hash from https://my.telegram.org/apps    
 Change Chrome profile names (Use Default for default one, Profile 1 for first created profile, Profile 2 for second created profile etc)
 
 
