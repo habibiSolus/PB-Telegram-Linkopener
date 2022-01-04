@@ -18,6 +18,26 @@
       "profileName": "Profile 2"
     }
   ],
+  "cooldownTimer": 300,
+  "PartsBot2": {
+    "_comment": "This is the channel PartsBot2 channel with all the other stock checkers",
+    "enabled": true,
+    "filters": {
+      "_comment": "Mapping: Key = match (lower cases), value = filter as normal filters below",
+      "1660 ti": "1660ti",
+      "1660": "1660",
+      "3060 ti": "3060ti_LHR",
+      "3060": "3060_LHR",
+      "3070 ti": "3070ti_LHR",
+      "3070": "3070_LHR",
+      "3080 ti": "3080ti_LHR",
+      "3080": "3080_LHR",
+      "3090 ti": "3090ti_LHR",
+      "3090": "3090_LHR",
+      "XBOX": "XBOX",
+      "PS5": "PS5"
+    }
+  },  
   "button": {
     "_comment": "Button number 0: checkout, Button number 1: Turbo, Button number 2: Extension URL",
     "number": 2

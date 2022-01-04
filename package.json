@@ -1,6 +1,6 @@
 {
   "name": "PB-Telegram-LinkOpener",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "Partsbot telegram opener by Oizopower",
   "main": "app.js",
   "bin": "app.js",
@@ -14,7 +14,8 @@
     "output": "dist",
     "assets": [
       "node_modules/figlet/fonts/Standard.flf",
-      "node_modules/open/xdg-open"
+      "node_modules/open/xdg-open",
+      "package.json"
     ]
   },
   "dependencies": {

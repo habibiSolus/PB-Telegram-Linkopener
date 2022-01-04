@@ -13,7 +13,8 @@ const { exec } = require("child_process");
 const log4js = require('log4js');
 const fetch = require('node-fetch');
 
-const version = "0.0.9";
+const liner = "===================================================================================================================";
+const productCooldown = {};
 
 if(!checkFileExistsSync(path.join(process.cwd(), './config.json')))
 {
@@ -77,10 +78,27 @@ const client = new TelegramClient(storeSession, apiId, apiHash,
     });
     
     console.log("+ Wheeee! we zijn verbonden.");
-    console.log("=============================================================================================================================="); 
-    printMemoryUsage();
+    console.log(liner);
+    
+    setTimeout(() => {
+        printMemoryUsage();    
+    }, 2000);
+    
 
-    client.addEventHandler(handleMessages, new NewMessage({chats: [-1001396614919,-1001165395320]}));
+    /**
+     * TEST = 1165395320
+     * PB = 1396614919
+     * PB2 = 1647685570
+     *  */ 
+
+    let listChats = [1396614919, 1165395320]
+
+    if(Config.hasOwnProperty("PartsBot2") && Config.PartsBot2.enabled)
+    {
+        listChats.push(1647685570)
+    }
+
+    client.addEventHandler(handleMessages, new NewMessage({chats: listChats}));
 })();
 
 async function handleMessages(event) 
@@ -94,6 +112,8 @@ async function handleMessages(event)
 
         if(titleUser !== undefined)
         {
+            const isPB2 = (titleUser == "PartsBot - Direct Buy 2" || titleUser.includes("Announcements General")) ? true : false;
+
             if (titleUser.includes("Direct Buy") || titleUser.includes("PartsBot Amazon Alert") || titleUser.includes("Announcements General"))
             {
                 // Make array of all possible buttons
@@ -105,7 +125,6 @@ async function handleMessages(event)
 
                 if(buttonLink.length > 0)
                 {
-
                     try{
                         buttonLink.push(message.replyMarkup.rows[0].buttons[1].url);
                     } catch (error) {
@@ -123,21 +142,86 @@ async function handleMessages(event)
                     let messageText = message.text;
 
                     let productPriceReg = messageText.match(/Price: (.*)/i)[1];
+                    let amountDecimals = countDecimals(productPriceReg.replace(/[^0-9.,+-]/g, ''));
                     let productPriceTemp = productPriceReg.replace(/[^0-9+-]/g, '');
+
+                    if(amountDecimals === 1)
+                    {
+                        productPriceTemp = parseInt(productPriceTemp + "0")
+                    }
+
                     let lines = messageText.split('\n');
-                    let productSoldBy = messageText.match(/Sold by: (.*)/i)[1];
+                    let productSoldBy = (!isPB2 ? messageText.match(/Sold by: (.*)/i)[1] : "");
 
                     let productData = {
-                        "productModel": messageText.match(/Model: (.*)/i)[1],
+                        "productModel": !isPB2 ? messageText.match(/Model: (.*)/i)[1] : "",
                         "productSoldBy": productSoldBy,
                         "amazonCountry": productPriceReg.includes("€") ? "EUR" : "UK",
                         "productPrice": parseFloat(productPriceTemp/100),
                         "amazonWareHouse": (productSoldBy.includes("Warehouse")) ? true : false,
                         "dateTime": new Date().toLocaleString(),
-                        "productName": lines[lines.length - 1].replace(/\*\*/g,""),
-                        "website": lines[0].replace(/\*\*/g,"")
+                        "productName": !isPB2 ? lines[lines.length - 1].replace(/\*\*/g,"") : lines[lines.length - 1].replace(/\[.*?\]/g, "").replace(/\*\*/g,"").trim(),
+                        "website": lines[0].replace(/\*\*/g,""),
+                        "source": false,
+                        "chanTitle": titleUser
                     }
 
+                    if(isPB2 && Config.hasOwnProperty("PartsBot2"))
+                    {
+                        // alternate Filtering.
+                        let PB2_ProductTitle = productData.productName.toLowerCase()
+
+                        let PB2Filters = Config.PartsBot2.filters;
+                        let PB2RegArray = [];
+
+                        for (var key in PB2Filters) {
+                            if (PB2Filters.hasOwnProperty(key)) {
+                                PB2RegArray.push(key);
+                            }
+                        }
+
+                        let PB2Reg = RegExp("(" + PB2RegArray.join("|") + ")", 'i');
+                        let PB2Model = PB2_ProductTitle.match(PB2Reg);
+
+                        if(PB2Model != null)
+                        {
+                            if(PB2Filters.hasOwnProperty(PB2Model[0]))
+                            {
+                                productData.productModel = PB2Filters[PB2Model[0]];
+                            }
+                        }
+
+                        let source = messageText.match(/Source: (.*)/i);
+
+                        if(source != null) {
+                            productData.source = source[1];
+                        }
+                    }
+
+                    // cooldown timers
+                    if(Config.hasOwnProperty("cooldownTimer"))
+                    {
+                        if(productCooldown.hasOwnProperty(productData.productName + productPriceTemp) && 
+                        Date.now()-productCooldown[productData.productName + productPriceTemp] < Config.cooldownTimer*1000)
+                        {
+                            logger.error("PRODUCT ON COOLDOWN TIMER: " + productData.productName);
+                            console.log(liner);
+                            return;
+                        }
+                        else
+                        {
+                            productCooldown[productData.productName + productPriceTemp] = Date.now();
+                        }
+                    }
+                    else
+                    {
+                        logger.warn(" Cooldown timer not found in config.json, please update your config (see latest config.json.sample)");
+                        console.log(liner);
+                    }
+
+                    
+                    
+                    // start normal filters
                     let filterStatus = false;
 
                     if (Config.filters.hasOwnProperty(productData.productModel)) 
@@ -167,33 +251,39 @@ async function handleMessages(event)
                     }
 
                     logger.info(" " + productData.productName);
+                    logger.info(" ");
+                    logger.info(" Channel: " + productData.chanTitle + (productData.source ? " (Source TG: " + productData.source + ")" : ""));
                     logger.info(" Website: " + productData.website);
-                    logger.info(" Model: " + productData.productModel);
-                    logger.info(" Prijs: " + productData.productPrice);
+                    if(productData.productModel) logger.info(" Model: " + productData.productModel);
+                    logger.info(" Price: " + productData.productPrice);
                     logger.info(" Country: " + productData.amazonCountry);
-                    logger.info(" Is WHD: " + (productData.amazonWareHouse ? "Ja" : "Nee"));
+                    logger.info(" Is WHD: " + (!isPB2 ? (productData.amazonWareHouse ? "Yes" : "No") : "Unknown"));
                     logger.info(" ");
 
+                    logger.info(" Filters");
                     if (Config.filters.hasOwnProperty(productData.productModel) && Config.filters[productData.productModel].hasOwnProperty(productData.amazonCountry))
                     {
-                        logger.info(" Filters");
-                        logger.info(" Enabled: " + (Config.filters[productData.productModel][productData.amazonCountry]['enabled'] ? "Ja" : "Nee") + ", Max Prijs: " 
+                        logger.info(" Enabled: " + (Config.filters[productData.productModel][productData.amazonCountry]['enabled'] ? "Yes" : "No") + ", Max Price: " 
                         + Config.filters[productData.productModel][productData.amazonCountry]['maxprice'] + ", WHD accepted: " 
-                        + (Config.filters[productData.productModel][productData.amazonCountry]['useWarehouse'] ? "Ja" : "Nee"));
-                        logger.info(" ");
+                        + (Config.filters[productData.productModel][productData.amazonCountry]['useWarehouse'] ? "Yes" : "No"));
                     }
+                    else {
+                        logger.info(" No filters found in config");
+                    }
+                    logger.info(" ");
+                    
                     if (Config.filters.hasOwnProperty(productData.productModel) && 
                         Config.filters[productData.productModel].hasOwnProperty("advanced") && 
                         Config.filters[productData.productModel]["advanced"].hasOwnProperty("buttons"))
                     {
-                        logger.info(" Geavanceerde filters:");
-                        logger.info(" Gebruik custom buttons: " + (Config.filters[productData.productModel]["advanced"]["buttons"]["enableMultipleButtons"] ? "Ja" : "Nee") + ", Custom buttons: " 
+                        logger.info(" Advanced filters:");
+                        logger.info(" Use multiple buttons: " + (Config.filters[productData.productModel]["advanced"]["buttons"]["enableMultipleButtons"] ? "Yes" : "No") + ", Custom buttons: " 
                         + Config.filters[productData.productModel]["advanced"]["buttons"]["overrideButtons"]);
                         logger.info(" ");
                     }
                     
                     logger.info(" Filter Status: " + (filterStatus ? "\x1b[32mAccepted\x1b[0m" : "\x1b[31mDenied\x1b[0m"));
-                    console.log("=============================================================================================================================="); 
+                    console.log(liner);
                 }
                 else
                 {
@@ -311,6 +401,11 @@ async function openBrowser(opsys, buttonLink, productData)
 
 async function checkGithubVersion()
 {
+    /* Local version */
+    const packageFilePath = path.join(__dirname, './package.json');
+    const packageFile = fs.readFileSync(packageFilePath);
+    const package = JSON.parse(packageFile);
+
     const response = await fetch('https://api.github.com/repos/Oizopower/PB-Telegram-Linkopener/releases/latest', {
         headers: 
         {
@@ -320,7 +415,7 @@ async function checkGithubVersion()
     });
     
     const data = await response.json();
-    return {'local': version, 'github': data.tag_name};
+    return {'local': package.version, 'github': data.tag_name};
 }
 
 function checkFileExistsSync(filepath){
@@ -333,11 +428,16 @@ function checkFileExistsSync(filepath){
     return flag;
 }
 
+function countDecimals(value) {
+    if(Math.floor(value.valueOf()) === value.valueOf()) return 0;
+    return value.toString().split(".")[1].length || 0; 
+}
+
 function printMemoryUsage()
 {
     let mem = process.memoryUsage();
     logger.mark(" MEMORY USAGE - RSS: " + mem.rss + " | HEAPTOTAL: " + mem.heapTotal + " | HEAPUSED: " + mem.heapUsed + " | EXTERNAL: " + mem.external + " | ARRAYBUFFERS: " + mem.arrayBuffers )
-    console.log("=============================================================================================================================="); 
+    console.log(liner);
 }
 
 setInterval(printMemoryUsage, 60 * 60 * 1000);
