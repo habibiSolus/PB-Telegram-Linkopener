@@ -16,6 +16,10 @@ const fetch = require('node-fetch');
 const liner = "===================================================================================================================";
 const productCooldown = {};
 
+let linksOpened = 0;
+let linksSkipped = 0;
+
+
 if(!checkFileExistsSync(path.join(process.cwd(), './config.json')))
 {
     console.error("config.json not found, copy and change config.json.sample to config.json");
@@ -106,6 +110,7 @@ async function handleMessages(event)
     const message = event.message;
     const sender = await message.getSender();
     const buttonLink = [];
+    const messageText = message.text;
 
     try {
         let titleUser = sender.title;
@@ -117,29 +122,57 @@ async function handleMessages(event)
             if (titleUser.includes("Direct Buy") || titleUser.includes("PartsBot Amazon Alert") || titleUser.includes("Announcements General"))
             {
                 // Make array of all possible buttons
-                try{
-                    buttonLink.push(message.replyMarkup.rows[0].buttons[0].url);
-                } catch (error) {
-                    logger.warn(" Button 1 does not exists on this alert");
+                if(!isPB2)
+                {
+                    try{
+                        buttonLink.push(message.replyMarkup.rows[0].buttons[0].url);
+                    } catch (error) {
+                        logger.warn(" Button 1 does not exists on this alert");
+                    }
+                } 
+                else
+                {
+                    try{
+                        buttonLink.push(message.entities[2].url);
+                    } catch (error) {
+                        logger.warn(" Button 1 does not exists on this alert");
+                    }
                 }
 
                 if(buttonLink.length > 0)
                 {
-                    try{
-                        buttonLink.push(message.replyMarkup.rows[0].buttons[1].url);
-                    } catch (error) {
-                        buttonLink.push(message.replyMarkup.rows[0].buttons[1].url);
-                        logger.warn(" Button 2 does not exists on this alert, using button 1 as fallback for button 2");
+                    if(!isPB2)
+                    {
+                        try{
+                            buttonLink.push(message.replyMarkup.rows[0].buttons[1].url);
+                        } catch (error) {
+                            buttonLink.push(message.replyMarkup.rows[0].buttons[1].url);
+                            logger.warn(" Button 2 does not exists on this alert, using button 1 as fallback for button 2");
+                        }
+        
+                        try{
+                            buttonLink.push(message.replyMarkup.rows[0].buttons[2].url);
+                        } catch (error) {
+                            buttonLink.push(message.replyMarkup.rows[0].buttons[1].url);
+                            logger.warn(" Button 3 does not exists on this alert, using button 2 as fallback for button 3");
+                        }
                     }
-    
-                    try{
-                        buttonLink.push(message.replyMarkup.rows[0].buttons[2].url);
-                    } catch (error) {
-                        buttonLink.push(message.replyMarkup.rows[0].buttons[1].url);
-                        logger.warn(" Button 3 does not exists on this alert, using button 2 as fallback for button 3");
+                    else
+                    {
+                        try{
+                            buttonLink.push(message.entities[3].url);
+                        } catch (error) {
+                            buttonLink.push(message.replyMarkup.rows[0].buttons[2].url);
+                            logger.warn(" Button 2 does not exists on this alert, using button 1 as fallback for button 2");
+                        }
+        
+                        try{
+                            buttonLink.push(message.entities[4].url);
+                        } catch (error) {
+                            buttonLink.push(message.entities[3].url);
+                            logger.warn(" Button 3 does not exists on this alert, using button 2 as fallback for button 3");
+                        }
                     }
-
-                    let messageText = message.text;
 
                     let productPriceReg = messageText.match(/Price: (.*)/i)[1];
                     let amountDecimals = countDecimals(productPriceReg.replace(/[^0-9.,+-]/g, ''));
@@ -160,7 +193,7 @@ async function handleMessages(event)
                         "productPrice": parseFloat(productPriceTemp/100),
                         "amazonWareHouse": (productSoldBy.includes("Warehouse")) ? true : false,
                         "dateTime": new Date().toLocaleString(),
-                        "productName": !isPB2 ? lines[lines.length - 1].replace(/\*\*/g,"") : lines[lines.length - 1].replace(/\[.*?\]/g, "").replace(/\*\*/g,"").trim(),
+                        "productName": !isPB2 ? lines[lines.length - 1].replace(/\*\*/g,"") : lines[lines.length - 7].replace(/\[.*?\]/g, "").replace(/\*\*/g,"").trim(),
                         "website": lines[0].replace(/\*\*/g,""),
                         "source": false,
                         "chanTitle": titleUser
@@ -204,7 +237,7 @@ async function handleMessages(event)
                         if(productCooldown.hasOwnProperty(productData.productName + productPriceTemp) && 
                         Date.now()-productCooldown[productData.productName + productPriceTemp] < Config.cooldownTimer*1000)
                         {
-                            logger.error("PRODUCT ON COOLDOWN TIMER: " + productData.productName);
+                            logger.error("PRODUCT ON COOLDOWN ("+Config.cooldownTimer+" sec): " + productData.productName);
                             console.log(liner);
                             return;
                         }
@@ -283,6 +316,13 @@ async function handleMessages(event)
                     }
                     
                     logger.info(" Filter Status: " + (filterStatus ? "\x1b[32mAccepted\x1b[0m" : "\x1b[31mDenied\x1b[0m"));
+
+                    if(filterStatus){
+                        linksOpened++;
+                    } else {
+                        linksSkipped++;
+                    }
+
                     console.log(liner);
                 }
                 else
@@ -448,4 +488,12 @@ function printMemoryUsage()
     console.log(liner);
 }
 
+
+function printStatus()
+{
+    logger.mark(" LINKS OPENED: " + linksOpened + " | LINKS SKIPPED: " + linksSkipped)
+    console.log(liner);
+}
+
 setInterval(printMemoryUsage, 60 * 60 * 1000);
+setInterval(printStatus, 60 * 30 * 1000);
