@@ -430,7 +430,15 @@ function checkFileExistsSync(filepath){
 
 function countDecimals(value) {
     if(Math.floor(value.valueOf()) === value.valueOf()) return 0;
-    return value.toString().split(".")[1].length || 0; 
+
+    let splitData = value.toString().split(".");
+
+    if(splitData.length === 1) {
+        splitData = value.toString().split(",");
+    }
+
+    var ret = splitData[1].length || 0; 
+    return ret
 }
 
 function printMemoryUsage()
