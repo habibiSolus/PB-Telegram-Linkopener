@@ -491,7 +491,25 @@ function printMemoryUsage()
 
 function printStatus()
 {
+    let DonateMessages = [
+        "GEWOON GOEIE KOFI",
+        "DONT FORGET TO BUY ME A KOFI (PREFER IRISH)",
+        "ATLEAST DAAN, PAX AND BATRICK BOUGHT ME A KOFI",
+        "NEED MOAR KOFI",
+        "CREDITS TO MELVIN FOR MAKING THOSE TG GROUPS, HE DESIRVES A KOFI AS WELL - https://www.ko-fi.com/partsbotfze",
+        "WHAT DO YOU CALL SAD KOFI? DESPRESSO",
+        "I DRINK SO MUCH KOFI AT WORK, I CONSIDER IT PART OF MY DAILY GRIND",
+        "SOUP OF THE DAY: KOFI",
+        "HOW ARE KOFI BEANS LIKE TEENAGERS? BOTH ARE ALWAYS GETTING GROUNDED",
+        "WHAT KIND OF SUGAR DOES LADY GAGA USE IN HER KOFI? RAW RAW RAW RAW RAW.",
+        "DOES MOSES USE INSTANT KOFI? NO. HE BREWS.",
+        "I LIKE MY GIRLFRIEND SAME WAY I LIKE MY KOFI: SMOKING HOT!",
+        "I LIKE MY KOFI THE SAME WAY AS MY SENSE OF HUMOR: BLACK!",
+        "BARISTA: HOW DO YOU TAKE YOUR KOFI? ME: VERY, VERY SERIOUSLY."
+    ]
+
     logger.mark(" LINKS OPENED: " + linksOpened + " | LINKS SKIPPED: " + linksSkipped)
+    logger.mark(" \x1b[1m\x1b[33m" + DonateMessages[Math.floor(Math.random()*DonateMessages.length)], " - https://ko-fi.com/oizopower\x1b[0m")
     console.log(liner);
 }
 
