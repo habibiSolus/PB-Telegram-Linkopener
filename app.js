@@ -142,7 +142,11 @@ async function handleMessages(event)
                 else
                 {
                     try{
-                        buttonLink.push(message.entities[2].url);
+                        let firstButton = message.entities[2].url;
+                        if(!firstButton.includes("www.amazon.null"))
+                        {
+                            buttonLink.push(message.entities[2].url);
+                        }
                     } catch (error) {
                         logger.warn(" Button 1 does not exists on this alert");
                     }
@@ -270,7 +274,7 @@ async function handleMessages(event)
                                 filterStatus = true;
                                 if(productData.amazonWareHouse)
                                 {
-                                    if(Config.filters[productData.productModel][productData.amazonCountry]['useWarehouse'])
+                                    if(Config.filters[productData.productModel][productData.amazonCountry]['useWarehouse'] && !buttonLink.includes("amazon.null"))
                                     {
                                         openBrowser(opsys, buttonLink, productData);
                                     }
@@ -281,11 +285,19 @@ async function handleMessages(event)
                                 }
                                 else
                                 {
-                                    openBrowser(opsys, buttonLink, productData);
+                                    if(!buttonLink.includes("amazon.null"))
+                                    {
+                                        openBrowser(opsys, buttonLink, productData);
+                                    }
+                                    else
+                                    {
+                                        filterStatus = false;
+                                    }
                                 }
                             } 
                         }
                     }
+                    
 
                     logger.info(" " + productData.productName);
                     logger.info(" ");
@@ -331,7 +343,7 @@ async function handleMessages(event)
                 }
                 else
                 {
-                    logger.warn("Button niet gevonden");
+                    logger.warn("Button not found or wrongly formatted product");
                 }
             }
         }
@@ -344,112 +356,122 @@ async function handleMessages(event)
 
 async function openBrowser(opsys, buttonLink, productData) 
 {
-    for (var i = 0; i < Config.profiles.length; i++) 
+    let linksToOpen = [];
+
+    if(Config.hasOwnProperty("profiles"))
     {
-        if(Config.profiles[i].enabled)
+        for (var i = 0; i < Config.profiles.length; i++) 
         {
-            if (Config.filters.hasOwnProperty(productData.productModel) && 
-                Config.filters[productData.productModel].hasOwnProperty("advanced") && 
-                Config.filters[productData.productModel]["advanced"].hasOwnProperty("buttons")
-                && Config.filters[productData.productModel]["advanced"]["buttons"]["enableMultipleButtons"])
+            if(Config.profiles[i].enabled)
             {
-                let multipleLinks = Config.filters[productData.productModel]["advanced"]["buttons"]["overrideButtons"];
-                for(var j = 0; j < multipleLinks.length; j++)
+                if (Config.filters.hasOwnProperty(productData.productModel) && 
+                    Config.filters[productData.productModel].hasOwnProperty("advanced") && 
+                    Config.filters[productData.productModel]["advanced"].hasOwnProperty("buttons")
+                    && Config.filters[productData.productModel]["advanced"]["buttons"]["enableMultipleButtons"])
                 {
-                    /** Check if we need to use AddressID's */
-                    if(Config.profiles[i].hasOwnProperty("addressID") && buttonLink[multipleLinks[j]].includes("/purchase_item/"))
-                    {
-                        buttonLink[multipleLinks[j]] = checkForAddressID(buttonLink[multipleLinks[j]], Config.profiles[i].addressID);
-                    }
-                    /** End */
+                    let multipleLinks = Config.filters[productData.productModel]["advanced"]["buttons"]["overrideButtons"];
 
-                    if(opsys == "macos")
+                    for(var j = 0; j < multipleLinks.length; j++)
                     {
-                        exec('open -n -a "Google Chrome" --args --profile-directory="'+Config.profiles[i].profileName+'" "'+buttonLink[multipleLinks[j]]+'"', (error, stdout, stderr) => {
-                            if (error) {
-                                logger.warn(`error: ${error.message}`);
-                                return;
-                            }
-                            if (stderr) {
-                                logger.warn(`stderr: ${stderr}`);
-                                return;
-                            }
-                        });
-                    }
-                    else if (opsys == "windows")
-                    {
-                        exec('start "" chrome.exe --profile-directory="'+Config.profiles[i].profileName+'" "'+buttonLink[multipleLinks[j]]+'"', (error, stdout, stderr) => {
-                            if (error) {
-                                logger.warn(`error: ${error.message}`);
-                                return;
-                            }
-                            if (stderr) {
-                                logger.warn(`stderr: ${stderr}`);
-                                return;
-                            }
-                        });
-                    }
-                    else
-                    {
-                        let profileChrome = "--profile-directory=" + Config.profiles[i].profileName;
-                        open(buttonLink[multipleLinks[j]], {app: {name: "chrome", arguments: [profileChrome]}});
-                    }
-
-                    if(Config.telegram.notifySelf !== undefined && Config.telegram.notifySelf)
-                    {
-                        await client.sendMessage('me',{
-                            message:"Following product opened on Telegram Link Opener: \nProduct: " + productData.productName + "\nURL: " + buttonLink[multipleLinks[j]]
-                        });
-                    }
-                }
-            }
-            else
-            {
-                /** Check if we need to use AddressID's */
-                if(Config.profiles[i].hasOwnProperty("addressID") && buttonLink[Config.button.number].includes("/purchase_item/"))
-                {
-                    buttonLink[Config.button.number] = checkForAddressID(buttonLink[Config.button.number], Config.profiles[i].addressID);
-                }
-                /** End */
-
-                if(opsys == "macos")
-                {
-                    exec('open -n -a "Google Chrome" --args --profile-directory="'+Config.profiles[i].profileName+'" "'+buttonLink[Config.button.number]+'"', (error, stdout, stderr) => {
-                        if (error) {
-                            logger.warn(`error: ${error.message}`);
-                            return;
+                        /** Check if we need to use AddressID's */
+                        if(Config.profiles[i].hasOwnProperty("addressID") && buttonLink[multipleLinks[j]].includes("/purchase_item/"))
+                        {
+                            linksToOpen.push({profile: Config.profiles[i].profileName, url: checkForAddressID(buttonLink[multipleLinks[j]], Config.profiles[i].addressID)});
                         }
-                        if (stderr) {
-                            logger.warn(`stderr: ${stderr}`);
-                            return;
+                        else
+                        {
+                            linksToOpen.push({profile: Config.profiles[i].profileName, url: checkForAddressID(buttonLink[multipleLinks[j]])});
                         }
-                    });
-                }
-                else if (opsys == "windows")
-                {
-                    exec('start "" chrome.exe --profile-directory="'+Config.profiles[i].profileName+'" "'+buttonLink[Config.button.number]+'"', (error, stdout, stderr) => {
-                        if (error) {
-                            logger.warn(`error: ${error.message}`);
-                            return;
-                        }
-                        if (stderr) {
-                            logger.warn(`stderr: ${stderr}`);
-                            return;
-                        }
-                    });
+                    }
                 }
                 else
                 {
-                    let profileChrome = "--profile-directory=" + Config.profiles[i].profileName;
-                    open(buttonLink[Config.button.number], {app: {name: "chrome", arguments: [profileChrome]}});
+                    if(Config.profiles[i].hasOwnProperty("addressID") && buttonLink[Config.button.number].includes("/purchase_item/"))
+                    {
+                        linksToOpen.push({profile: Config.profiles[i].profileName, url: checkForAddressID(buttonLink[Config.button.number], Config.profiles[i].addressID)});
+                    }
+                    else
+                    {
+                        linksToOpen.push({profile: Config.profiles[i].profileName, url: buttonLink[Config.button.number]});
+                    }
                 }
+            }
+        }
+    }
+    else
+    {
+        if (Config.filters.hasOwnProperty(productData.productModel) && 
+            Config.filters[productData.productModel].hasOwnProperty("advanced") && 
+            Config.filters[productData.productModel]["advanced"].hasOwnProperty("buttons")
+            && Config.filters[productData.productModel]["advanced"]["buttons"]["enableMultipleButtons"])
+        {
+            let multipleLinks = Config.filters[productData.productModel]["advanced"]["buttons"]["overrideButtons"];
 
-                if(Config.telegram.notifySelf !== undefined && Config.telegram.notifySelf)
-                {
-                    await client.sendMessage('me',{
-                        message:"Following product opened on Telegram Link Opener: \nProduct: " + productData.productName + "\nURL: " + buttonLink[Config.button.number]
-                    });
-                }
+            for(var j = 0; j < multipleLinks.length; j++)
+            {
+                linksToOpen.push({profile: 'none', url: checkForAddressID(buttonLink[multipleLinks[j]])});
+            }
+        }
+        else
+        {
+            linksToOpen.push({profile: 'none', url: buttonLink[Config.button.number]});
+        }
+    }
+
+    if(linksToOpen.length === 0)
+    {
+        linksToOpen.push({profile: 'none', url: buttonLink[Config.button.number]});
+    }
+
+    if(linksToOpen.length > 0)
+    {
+        let startupPath = "";
+
+        switch(opsys) {
+            case "windows":
+                startupPath = 'start "" chrome.exe';
+            break;
+            case "macos":
+                startupPath = 'open -n -a "Google Chrome" --args';
+            break;
+            case "linux":
+                startupPath = '/usr/bin/google-chrome';
+            break;
+        }
+
+        if(Config.hasOwnProperty("chrome") && Config.chrome.hasOwnProperty("path"))
+        {
+            if(Config.chrome.path != "autodetect") 
+            {
+                startupPath = '"' + Config.chrome.path + '"';
+            }
+        }
+
+        let cleanUrls = [];
+        for (var i = 0; i < linksToOpen.length; i++) 
+        {
+            if(linksToOpen[i].profile == "none")
+            {
+                cleanUrls.push(startupPath + ' "'+linksToOpen[i].url+'"');    
+            }
+            else
+            {
+                cleanUrls.push(startupPath + ' --profile-directory="'+linksToOpen[i].profile+'" "'+linksToOpen[i].url+'"');
+            }
+        }
+
+        for (var j = 0; j < cleanUrls.length; j++) 
+        {
+            try{
+                exec(cleanUrls[j], (error, stdout, stderr) => {
+                    if (error) {
+                        console.log(error.message);
+                        return;
+                    }
+                });
+            }
+            catch(error) {
+                logger.error(error)
             }
         }
     }
@@ -535,6 +557,10 @@ function getDomainExtension(url)
 
 function checkForAddressID(url, addressID)
 {
+    if(addressID == undefined) {
+        addressID = {};
+    }
+
     let domainExtension = getDomainExtension(url);
 
     if(addressID.hasOwnProperty(domainExtension.toUpperCase()))
