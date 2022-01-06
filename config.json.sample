@@ -19,6 +19,15 @@
     }
   ],
   "cooldownTimer": 300,
+  "addressID": {
+    "enabled": false,
+    "ES": "123",
+    "DE": "123",
+    "FR": "123",
+    "UK": "123",
+    "NL": "123",
+    "IT": "123"
+  },  
   "PartsBot2": {
     "_comment": "This is the channel PartsBot2 channel with all the other stock checkers",
     "enabled": true,

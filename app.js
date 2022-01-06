@@ -12,7 +12,8 @@ const fs = require('fs');
 const { exec } = require("child_process");
 const log4js = require('log4js');
 const fetch = require('node-fetch');
-const currency = require('currency.js')
+const currency = require('currency.js');
+const { NewCallbackQueryDefaults } = require("telegram/events/CallbackQuery");
 
 const liner = "===================================================================================================================";
 const productCooldown = {};
@@ -153,7 +154,10 @@ async function handleMessages(event)
                         }
         
                         try{
-                            buttonLink.push(message.replyMarkup.rows[0].buttons[2].url);
+                            let url = message.replyMarkup.rows[0].buttons[2].url;
+                            url = checkForAddressID(url);
+
+                            buttonLink.push(url);
                         } catch (error) {
                             buttonLink.push(message.replyMarkup.rows[0].buttons[1].url);
                             logger.warn(" Button 3 does not exists on this alert, using button 2 as fallback for button 3");
@@ -169,7 +173,10 @@ async function handleMessages(event)
                         }
         
                         try{
-                            buttonLink.push(message.entities[4].url);
+                            let url = message.entities[4].url;
+                            url = checkForAddressID(url);
+
+                            buttonLink.push(url);
                         } catch (error) {
                             buttonLink.push(message.entities[3].url);
                             logger.warn(" Button 3 does not exists on this alert, using button 2 as fallback for button 3");
@@ -505,14 +512,28 @@ function formatPrice(price)
     
 }
 
-function parsePotentiallyGroupedFloat(stringValue) {
-    stringValue = stringValue.trim();
-    var result = stringValue.replace(/[^0-9]/g, '');
+function getDomainExtension(url)
+{
+    let domain = (new URL(url)).hostname.replace('www.','');
+    let domSplit = domain.split(".");
+    let extension = domSplit[domSplit.length - 1]
 
-    if (/[,\.]\d{2}$/.test(stringValue)) {
-        result = result.replace(/(\d{2})$/, '.$1');
+    return extension;
+}
+
+function checkForAddressID(url)
+{
+    let domainExtension = getDomainExtension(url);
+
+    if(Config.hasOwnProperty("addressID") && Config.addressID.hasOwnProperty(domainExtension.toUpperCase()))
+    {
+        if(Config.addressID.enabled)
+        {
+            url = url + "&addressID=" + Config.addressID[domainExtension.toUpperCase()];
+        }
     }
-    return parseFloat(result);
+
+    return url;
 }
 
 function printMemoryUsage()
