@@ -23,19 +23,8 @@
     "_comment": "This is the channel PartsBot2 channel with all the other stock checkers",
     "enabled": true,
     "filters": {
-      "_comment": "Mapping: Key = match (lower cases), value = filter as normal filters below",
-      "1660 ti": "1660ti",
-      "1660": "1660",
-      "3060 ti": "3060ti_LHR",
-      "3060": "3060_LHR",
-      "3070 ti": "3070ti_LHR",
-      "3070": "3070_LHR",
-      "3080 ti": "3080ti_LHR",
-      "3080": "3080_LHR",
-      "3090 ti": "3090ti_LHR",
-      "3090": "3090_LHR",
-      "XBOX": "XBOX",
-      "PS5": "PS5"
+      "_comment": "Custom filters for Unknown models: (Mapping: Key = match (lower cases), value = filter as normal filters below)",
+      "3050": "3090"
     }
   },  
   "button": {
@@ -46,18 +35,18 @@
     "PS5": {
       "EUR": {
         "enabled": true,
-        "maxprice": 500,
+        "maxprice": 480,
         "useWarehouse": true
       },
       "UK": {
         "enabled": true,
-        "maxprice": 500,
+        "maxprice": 450,
         "useWarehouse": true
       },
       "advanced": {
         "buttons": {
           "enableMultipleButtons": false,
-          "overrideButtons": [1,2]
+          "overrideButtons": [0,1]
         }
       }
     },
@@ -70,6 +59,24 @@
       "UK": {
         "enabled": false,
         "maxprice": 500,
+        "useWarehouse": true
+      },
+      "advanced": {
+        "buttons": {
+          "enableMultipleButtons": false,
+          "overrideButtons": [1,2]
+        }
+      }
+    },
+    "1650": {
+      "EUR": {
+        "enabled": false,
+        "maxprice": 400,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": false,
+        "maxprice": 400,
         "useWarehouse": true
       },
       "advanced": {
@@ -115,15 +122,15 @@
         }
       }
     },
-    "3060": {
+    "1660s": {
       "EUR": {
-        "enabled": true,
+        "enabled": false,
         "maxprice": 600,
         "useWarehouse": true
       },
       "UK": {
-        "enabled": true,
-        "maxprice": 350,
+        "enabled": false,
+        "maxprice": 600,
         "useWarehouse": true
       },
       "advanced": {
@@ -136,7 +143,7 @@
     "3060_LHR": {
       "EUR": {
         "enabled": true,
-        "maxprice": 600,
+        "maxprice": 450,
         "useWarehouse": true
       },
       "UK": {
@@ -151,51 +158,15 @@
         }
       }
     },
-    "3060ti": {
-      "EUR": {
-        "enabled": true,
-        "maxprice": 800,
-        "useWarehouse": true
-      },
-      "UK": {
-        "enabled": true,
-        "maxprice": 450,
-        "useWarehouse": true
-      },
-      "advanced": {
-        "buttons": {
-          "enableMultipleButtons": false,
-          "overrideButtons": [1,2]
-        }
-      }
-    },
     "3060ti_LHR": {
       "EUR": {
         "enabled": true,
-        "maxprice": 800,
+        "maxprice": 650,
         "useWarehouse": true
       },
       "UK": {
         "enabled": true,
-        "maxprice": 420,
-        "useWarehouse": true
-      },
-      "advanced": {
-        "buttons": {
-          "enableMultipleButtons": false,
-          "overrideButtons": [1,2]
-        }
-      }
-    },
-    "3070": {
-      "EUR": {
-        "enabled": true,
-        "maxprice": 900,
-        "useWarehouse": true
-      },
-      "UK": {
-        "enabled": true,
-        "maxprice": 420,
+        "maxprice": 550,
         "useWarehouse": true
       },
       "advanced": {
@@ -213,30 +184,12 @@
       },
       "UK": {
         "enabled": true,
-        "maxprice": 420,
+        "maxprice": 550,
         "useWarehouse": true
       },
       "advanced": {
         "buttons": {
-          "enableMultipleButtons": false,
-          "overrideButtons": [1,2]
-        }
-      }
-    },
-    "3070ti": {
-      "EUR": {
-        "enabled": true,
-        "maxprice": 850,
-        "useWarehouse": true
-      },
-      "UK": {
-        "enabled": true,
-        "maxprice": 420,
-        "useWarehouse": true
-      },
-      "advanced": {
-        "buttons": {
-          "enableMultipleButtons": false,
+          "enableMultipleButtons": true,
           "overrideButtons": [1,2]
         }
       }
@@ -244,30 +197,12 @@
     "3070ti_LHR": {
       "EUR": {
         "enabled": true,
-        "maxprice": 900,
+        "maxprice": 950,
         "useWarehouse": true
       },
       "UK": {
         "enabled": true,
-        "maxprice": 420,
-        "useWarehouse": true
-      },
-      "advanced": {
-        "buttons": {
-          "enableMultipleButtons": false,
-          "overrideButtons": [1,2]
-        }
-      }
-    },
-    "3080": {
-      "EUR": {
-        "enabled": true,
-        "maxprice": 1300,
-        "useWarehouse": true
-      },
-      "UK": {
-        "enabled": true,
-        "maxprice": 1150,
+        "maxprice": 500,
         "useWarehouse": true
       },
       "advanced": {
@@ -280,30 +215,12 @@
     "3080_LHR": {
       "EUR": {
         "enabled": true,
-        "maxprice": 1300,
+        "maxprice": 1200,
         "useWarehouse": true
       },
       "UK": {
         "enabled": true,
-        "maxprice": 1150,
-        "useWarehouse": true
-      },
-      "advanced": {
-        "buttons": {
-          "enableMultipleButtons": false,
-          "overrideButtons": [1,2]
-        }
-      }
-    },
-    "3080ti": {
-      "EUR": {
-        "enabled": true,
-        "maxprice": 1500,
-        "useWarehouse": true
-      },
-      "UK": {
-        "enabled": true,
-        "maxprice": 420,
+        "maxprice": 950,
         "useWarehouse": true
       },
       "advanced": {
@@ -321,7 +238,7 @@
       },
       "UK": {
         "enabled": true,
-        "maxprice": 420,
+        "maxprice": 1000,
         "useWarehouse": true
       },
       "advanced": {
@@ -334,12 +251,120 @@
     "3090": {
       "EUR": {
         "enabled": true,
-        "maxprice": 2200,
+        "maxprice": 1800,
         "useWarehouse": true
       },
       "UK": {
         "enabled": true,
-        "maxprice": 1650,
+        "maxprice": 1550,
+        "useWarehouse": true
+      },
+      "advanced": {
+        "buttons": {
+          "enableMultipleButtons": false,
+          "overrideButtons": [1,2]
+        }
+      }
+    },
+    "6600": {
+      "EUR": {
+        "enabled": true,
+        "maxprice": 100,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": true,
+        "maxprice": 100,
+        "useWarehouse": true
+      },
+      "advanced": {
+        "buttons": {
+          "enableMultipleButtons": false,
+          "overrideButtons": [1,2]
+        }
+      }
+    },
+    "6600XT": {
+      "EUR": {
+        "enabled": true,
+        "maxprice": 100,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": true,
+        "maxprice": 100,
+        "useWarehouse": true
+      },
+      "advanced": {
+        "buttons": {
+          "enableMultipleButtons": false,
+          "overrideButtons": [1,2]
+        }
+      }
+    },
+    "6700XT": {
+      "EUR": {
+        "enabled": true,
+        "maxprice": 100,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": true,
+        "maxprice": 100,
+        "useWarehouse": true
+      },
+      "advanced": {
+        "buttons": {
+          "enableMultipleButtons": false,
+          "overrideButtons": [1,2]
+        }
+      }
+    },
+    "6800": {
+      "EUR": {
+        "enabled": true,
+        "maxprice": 100,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": true,
+        "maxprice": 100,
+        "useWarehouse": true
+      },
+      "advanced": {
+        "buttons": {
+          "enableMultipleButtons": false,
+          "overrideButtons": [1,2]
+        }
+      }
+    },
+    "6800XT": {
+      "EUR": {
+        "enabled": true,
+        "maxprice": 100,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": true,
+        "maxprice": 100,
+        "useWarehouse": true
+      },
+      "advanced": {
+        "buttons": {
+          "enableMultipleButtons": false,
+          "overrideButtons": [1,2]
+        }
+      }
+    },
+    "6900XT": {
+      "EUR": {
+        "enabled": true,
+        "maxprice": 100,
+        "useWarehouse": true
+      },
+      "UK": {
+        "enabled": true,
+        "maxprice": 100,
         "useWarehouse": true
       },
       "advanced": {

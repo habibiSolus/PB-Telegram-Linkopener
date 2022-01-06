@@ -12,6 +12,7 @@ const fs = require('fs');
 const { exec } = require("child_process");
 const log4js = require('log4js');
 const fetch = require('node-fetch');
+const currency = require('currency.js')
 
 const liner = "===================================================================================================================";
 const productCooldown = {};
@@ -118,6 +119,7 @@ async function handleMessages(event)
         if(titleUser !== undefined)
         {
             const isPB2 = (titleUser == "PartsBot - Direct Buy 2" || titleUser.includes("Announcements General")) ? true : false;
+            // const isPB2 = (titleUser == "PartsBot - Direct Buy 2") ? true : false;
 
             if (titleUser.includes("Direct Buy") || titleUser.includes("PartsBot Amazon Alert") || titleUser.includes("Announcements General"))
             {
@@ -175,22 +177,16 @@ async function handleMessages(event)
                     }
 
                     let productPriceReg = messageText.match(/Price: (.*)/i)[1];
-                    let amountDecimals = countDecimals(productPriceReg.replace(/[^0-9.,+-]/g, ''));
-                    let productPriceTemp = productPriceReg.replace(/[^0-9+-]/g, '');
-
-                    if(amountDecimals === 1)
-                    {
-                        productPriceTemp = parseInt(productPriceTemp + "0")
-                    }
-
+                    let productPrice = formatPrice(productPriceReg);
+                    
                     let lines = messageText.split('\n');
                     let productSoldBy = (!isPB2 ? messageText.match(/Sold by: (.*)/i)[1] : "");
 
                     let productData = {
-                        "productModel": !isPB2 ? messageText.match(/Model: (.*)/i)[1] : "",
+                        "productModel": messageText.match(/Model: (.*)/i)[1],
                         "productSoldBy": productSoldBy,
                         "amazonCountry": productPriceReg.includes("€") ? "EUR" : "UK",
-                        "productPrice": parseFloat(productPriceTemp/100),
+                        "productPrice": productPrice,
                         "amazonWareHouse": (productSoldBy.includes("Warehouse")) ? true : false,
                         "dateTime": new Date().toLocaleString(),
                         "productName": !isPB2 ? lines[lines.length - 1].replace(/\*\*/g,"") : lines[lines.length - 7].replace(/\[.*?\]/g, "").replace(/\*\*/g,"").trim(),
@@ -204,23 +200,26 @@ async function handleMessages(event)
                         // alternate Filtering.
                         let PB2_ProductTitle = productData.productName.toLowerCase()
 
-                        let PB2Filters = Config.PartsBot2.filters;
-                        let PB2RegArray = [];
-
-                        for (var key in PB2Filters) {
-                            if (PB2Filters.hasOwnProperty(key)) {
-                                PB2RegArray.push(key);
-                            }
-                        }
-
-                        let PB2Reg = RegExp("(" + PB2RegArray.join("|") + ")", 'i');
-                        let PB2Model = PB2_ProductTitle.match(PB2Reg);
-
-                        if(PB2Model != null)
+                        if(productData.productModel == "Unknown")
                         {
-                            if(PB2Filters.hasOwnProperty(PB2Model[0]))
+                            let PB2Filters = Config.PartsBot2.filters;
+                            let PB2RegArray = [];
+                            for (var key in PB2Filters) {
+                                if (PB2Filters.hasOwnProperty(key)) {
+                                    PB2RegArray.push(key);
+                                }
+                            }
+                            PB2RegArray = PB2RegArray.reverse();
+    
+                            let PB2Reg = RegExp("(" + PB2RegArray.join("|") + ")", 'i');
+                            let PB2Model = PB2_ProductTitle.match(PB2Reg);
+                            
+                            if(PB2Model != null)
                             {
-                                productData.productModel = PB2Filters[PB2Model[0]];
+                                if(PB2Filters.hasOwnProperty(PB2Model[0]))
+                                {
+                                    productData.productModel = PB2Filters[PB2Model[0]];
+                                }
                             }
                         }
 
@@ -234,8 +233,8 @@ async function handleMessages(event)
                     // cooldown timers
                     if(Config.hasOwnProperty("cooldownTimer"))
                     {
-                        if(productCooldown.hasOwnProperty(productData.productName + productPriceTemp) && 
-                        Date.now()-productCooldown[productData.productName + productPriceTemp] < Config.cooldownTimer*1000)
+                        if(productCooldown.hasOwnProperty(productData.productName + productData.productPrice) && 
+                        Date.now()-productCooldown[productData.productName + productData.productPrice] < Config.cooldownTimer*1000)
                         {
                             logger.error("PRODUCT ON COOLDOWN ("+Config.cooldownTimer+" sec): " + productData.productName);
                             console.log(liner);
@@ -243,7 +242,7 @@ async function handleMessages(event)
                         }
                         else
                         {
-                            productCooldown[productData.productName + productPriceTemp] = Date.now();
+                            productCooldown[productData.productName + productData.productPrice] = Date.now();
                         }
                     }
                     else
@@ -252,8 +251,6 @@ async function handleMessages(event)
                         console.log(liner);
                     }
 
-                    
-                    
                     // start normal filters
                     let filterStatus = false;
 
@@ -468,17 +465,54 @@ function checkFileExistsSync(filepath){
     return flag;
 }
 
-function countDecimals(value) {
-    if(Math.floor(value.valueOf()) === value.valueOf()) return 0;
+function formatPrice(price)
+{
+    price = price.replace(/[^0-9.,+-]/g, '').trim();
 
-    let splitData = value.toString().split(".");
+    let cutPrice = price.split('')
+    let thousandSeparator = false;
+    let decimalSeparator = false;
 
-    if(splitData.length === 1) {
-        splitData = value.toString().split(",");
+    for(var j = 0; j < 3; j++)
+    {
+        if(cutPrice[j] == "." || cutPrice[j] == ",")
+        {
+            thousandSeparator = cutPrice[j];
+        }
     }
 
-    var ret = splitData[1].length || 0; 
-    return ret
+    price = price.replace(thousandSeparator, '');
+
+    cutPrice.reverse();
+    
+    for(var k = 0; k < 3; k++)
+    {
+        if(cutPrice[k] == "." || cutPrice[k] == ",")
+        {
+            decimalSeparator = cutPrice[k];
+        }
+    }
+
+    price = price.replace(decimalSeparator, '.');
+
+    if(decimalSeparator === false) {
+        price = price + ".00"
+    }
+    
+    checkPrice = currency(price, { precision: 2 });
+    
+    return checkPrice.value;
+    
+}
+
+function parsePotentiallyGroupedFloat(stringValue) {
+    stringValue = stringValue.trim();
+    var result = stringValue.replace(/[^0-9]/g, '');
+
+    if (/[,\.]\d{2}$/.test(stringValue)) {
+        result = result.replace(/(\d{2})$/, '.$1');
+    }
+    return parseFloat(result);
 }
 
 function printMemoryUsage()
@@ -508,8 +542,8 @@ function printStatus()
         "BARISTA: HOW DO YOU TAKE YOUR KOFI? ME: VERY, VERY SERIOUSLY."
     ]
 
-    logger.mark(" LINKS OPENED: " + linksOpened + " | LINKS SKIPPED: " + linksSkipped)
     logger.mark(" \x1b[1m\x1b[33m" + DonateMessages[Math.floor(Math.random()*DonateMessages.length)], " - https://ko-fi.com/oizopower\x1b[0m")
+    logger.mark(" LINKS OPENED: " + linksOpened + " | LINKS SKIPPED: " + linksSkipped)
     console.log(liner);
 }
 
