@@ -32,6 +32,12 @@ const configPath = path.join(process.cwd(), './config.json');
 const ConfigData = fs.readFileSync(configPath);
 const Config = JSON.parse(ConfigData);
 
+if(Config.telegram.app_id == "10000")
+{
+    console.error("config.json app_id not set > https://core.telegram.org/api/obtaining_api_id");
+    return;
+}
+
 const apiId = Config.telegram.app_id;
 const apiHash = Config.telegram.app_hash;
 const storeSession = new StoreSession("telegram_session");
@@ -154,10 +160,7 @@ async function handleMessages(event)
                         }
         
                         try{
-                            let url = message.replyMarkup.rows[0].buttons[2].url;
-                            url = checkForAddressID(url);
-
-                            buttonLink.push(url);
+                            buttonLink.push(message.replyMarkup.rows[0].buttons[2].url);
                         } catch (error) {
                             buttonLink.push(message.replyMarkup.rows[0].buttons[1].url);
                             logger.warn(" Button 3 does not exists on this alert, using button 2 as fallback for button 3");
@@ -173,10 +176,7 @@ async function handleMessages(event)
                         }
         
                         try{
-                            let url = message.entities[4].url;
-                            url = checkForAddressID(url);
-
-                            buttonLink.push(url);
+                            buttonLink.push(message.entities[4].url);
                         } catch (error) {
                             buttonLink.push(message.entities[3].url);
                             logger.warn(" Button 3 does not exists on this alert, using button 2 as fallback for button 3");
@@ -356,6 +356,13 @@ async function openBrowser(opsys, buttonLink, productData)
                 let multipleLinks = Config.filters[productData.productModel]["advanced"]["buttons"]["overrideButtons"];
                 for(var j = 0; j < multipleLinks.length; j++)
                 {
+                    /** Check if we need to use AddressID's */
+                    if(Config.profiles[i].hasOwnProperty("addressID") && buttonLink[multipleLinks[j]].includes("/purchase_item/"))
+                    {
+                        buttonLink[multipleLinks[j]] = checkForAddressID(buttonLink[multipleLinks[j]], Config.profiles[i].addressID);
+                    }
+                    /** End */
+
                     if(opsys == "macos")
                     {
                         exec('open -n -a "Google Chrome" --args --profile-directory="'+Config.profiles[i].profileName+'" "'+buttonLink[multipleLinks[j]]+'"', (error, stdout, stderr) => {
@@ -398,6 +405,13 @@ async function openBrowser(opsys, buttonLink, productData)
             }
             else
             {
+                /** Check if we need to use AddressID's */
+                if(Config.profiles[i].hasOwnProperty("addressID") && buttonLink[Config.button.number].includes("/purchase_item/"))
+                {
+                    buttonLink[Config.button.number] = checkForAddressID(buttonLink[Config.button.number], Config.profiles[i].addressID);
+                }
+                /** End */
+
                 if(opsys == "macos")
                 {
                     exec('open -n -a "Google Chrome" --args --profile-directory="'+Config.profiles[i].profileName+'" "'+buttonLink[Config.button.number]+'"', (error, stdout, stderr) => {
@@ -437,8 +451,6 @@ async function openBrowser(opsys, buttonLink, productData)
                     });
                 }
             }
-
-            
         }
     }
 }
@@ -521,15 +533,15 @@ function getDomainExtension(url)
     return extension;
 }
 
-function checkForAddressID(url)
+function checkForAddressID(url, addressID)
 {
     let domainExtension = getDomainExtension(url);
 
-    if(Config.hasOwnProperty("addressID") && Config.addressID.hasOwnProperty(domainExtension.toUpperCase()))
+    if(addressID.hasOwnProperty(domainExtension.toUpperCase()))
     {
-        if(Config.addressID.enabled)
+        if(addressID.enabled)
         {
-            url = url + "&addressID=" + Config.addressID[domainExtension.toUpperCase()];
+            url = url + "&addressID=" + addressID[domainExtension.toUpperCase()];
         }
     }
 
@@ -543,13 +555,12 @@ function printMemoryUsage()
     console.log(liner);
 }
 
-
 function printStatus()
 {
     let DonateMessages = [
         "GEWOON GOEIE KOFI",
         "DONT FORGET TO BUY ME A KOFI (PREFER IRISH)",
-        "ATLEAST DAAN, PAX AND BATRICK BOUGHT ME A KOFI",
+        "ATLEAST UMIT, DAAN, PAX AND PATRICK BOUGHT ME A KOFI",
         "NEED MOAR KOFI",
         "CREDITS TO MELVIN FOR MAKING THOSE TG GROUPS, HE DESIRVES A KOFI AS WELL - https://www.ko-fi.com/partsbotfze",
         "WHAT DO YOU CALL SAD KOFI? DESPRESSO",

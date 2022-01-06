@@ -7,7 +7,17 @@
   "profiles": [
     {
       "enabled": true,
-      "profileName": "Default"
+      "profileName": "Default",
+      "addressID": {
+        "_comment": "See https://www.amazon.nl/addressID for all the addressID, just copy paste under each profile",
+        "enabled": false,
+        "ES": "123",
+        "DE": "456",
+        "FR": "789",
+        "UK": "123",
+        "NL": "456",
+        "IT": "789"
+      }
     },
     {
       "enabled": false,
@@ -19,15 +29,6 @@
     }
   ],
   "cooldownTimer": 300,
-  "addressID": {
-    "enabled": false,
-    "ES": "123",
-    "DE": "123",
-    "FR": "123",
-    "UK": "123",
-    "NL": "123",
-    "IT": "123"
-  },  
   "PartsBot2": {
     "_comment": "This is the channel PartsBot2 channel with all the other stock checkers",
     "enabled": true,
