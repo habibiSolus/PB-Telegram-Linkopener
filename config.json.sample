@@ -4,6 +4,10 @@
     "app_hash": "dasasdasdasasddasdsaasddassdadsa",
     "notifySelf": false
   },
+  "chrome": {
+    "_comment": "Path can be 'autodetect' or full path to chrome.exe (C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe) mind double slashes on windows",
+    "path": "autodetect"
+  },  
   "profiles": [
     {
       "enabled": true,
